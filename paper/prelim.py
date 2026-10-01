@@ -1,7 +1,8 @@
 import pandas as pd, numpy as np, matplotlib
 matplotlib.use('Agg'); import matplotlib.pyplot as plt
 from scipy import stats
-df=pd.read_csv('../CORRECTED_2023_2026_NEPAL_FLOOD_WEATHER_KAGGLE.csv',encoding='utf-8-sig',parse_dates=['date'])
+from floodlab import data as _d
+df=_d.load()
 df=df.sort_values(['location','date'])
 Q='river_discharge_m3s';P='precipitation_mm';S='soil_moisture_0_100cm_m3m3'
 locs=df.groupby('location').elevation_m.first().sort_values().index.tolist()
@@ -50,6 +51,8 @@ plt.colorbar(sc,label='Elevation (m)'); ax.set_xlabel('Longitude (°E)');ax.set_
 fig,axs=plt.subplots(5,2,figsize=(10,9),sharex=True)
 for ax,l in zip(axs.T.ravel(),locs):
     x=piv[l]; ax.semilogy(x.index,x.clip(lower=.01),lw=.6); ax.set_title(f'{l} ({s.loc[l,"river"]})',fontsize=8)
+import matplotlib.dates as _md
+for _ax in axs.ravel(): _ax.xaxis.set_major_locator(_md.YearLocator()); _ax.xaxis.set_major_formatter(_md.DateFormatter('%Y'))
 fig.suptitle('Modelled daily discharge (m³/s, log scale)'); fig.tight_layout(); fig.savefig('figures/fig2_discharge.png',dpi=160); plt.close()
 # Fig: lag correlation heat
 fig,ax=plt.subplots(figsize=(6,4)); im=ax.imshow(lagdf.values,cmap='magma',aspect='auto',vmin=0,vmax=lagdf.values.max())

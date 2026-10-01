@@ -1,3 +1,5 @@
+> **Superseded.** This document analyses the *uncorrected* V2 discharge, which a later cell scan showed to be sampled from tributary-scale GloFAS cells at 7 of 10 locations. The current paper, computed on the corrected series, is `corrected/PAPER.md`; its Section 8.9 compares the two. This file is kept for the comparison.
+
 # Learning River Response Across Nepal's Himalayan Basins from Reanalysis Weather and Modelled Discharge: A Multi-Basin Benchmark and Methodology Plan
 
 **Working paper / research plan · dataset: *Nepal Flood & Weather Dataset 2023–2026 (V2)* · 10 locations · 13,390 daily records**

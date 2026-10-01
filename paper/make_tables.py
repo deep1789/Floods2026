@@ -1,5 +1,6 @@
 import pandas as pd, numpy as np
-df=pd.read_csv('../CORRECTED_2023_2026_NEPAL_FLOOD_WEATHER_KAGGLE.csv',encoding='utf-8-sig',parse_dates=['date']).sort_values(['location','date'])
+from floodlab import data as _d
+df=_d.load().sort_values(['location','date'])
 Q='river_discharge_m3s';P='precipitation_mm';S='soil_moisture_0_100cm_m3m3'
 def md(d,idx=False):
     d=d.reset_index() if idx else d
@@ -30,14 +31,16 @@ for l in order:
     pre=x[Q]['2024-09-15':'2024-09-24'].median(); pp=win[P]['2024-09-24':'2024-09-30'].idxmax(); qp=win[Q].idxmax()
     rows.append([l,round(x[P]['2024-09-26':'2024-09-28'].sum(),1),round(pre,2),round(win[Q].max(),2),round(win[Q].max()/max(pre,.01),1),round(win[Q].max()/x[Q].quantile(.99),2),(qp-pp).days if l!='Chameliya/Nayalbadi' else '—'])
 w('event',md(pd.DataFrame(rows,columns=['Location','P 26–28 Sep (mm)','Pre-event Q (median 15–24 Sep)','Peak Q 20 Sep–8 Oct','Peak / pre-event','Peak / Q99','Lag P-peak→Q-peak (d)'])))
-# T7 baseline
-b=pd.read_csv('baseline_results.csv')
-for h in (1,3,7):
-    d=b[b.h==h].set_index('location').loc[order]
-    t=pd.DataFrame({'NSE persistence':d.NSE_persist,'NSE HGB':d.NSE_hgb,'logNSE persistence':d.logNSE_persist,'logNSE HGB':d.logNSE_hgb})
-    t.loc['**Median**']=t.median()
-    t=t.round(3)
-    w(f'base{h}',md(t,True))
+import os
+if os.path.exists('baseline_results.csv'):
+    # T7 baseline
+    b=pd.read_csv('baseline_results.csv')
+    for h in (1,3,7):
+        d=b[b.h==h].set_index('location').loc[order]
+        t=pd.DataFrame({'NSE persistence':d.NSE_persist,'NSE HGB':d.NSE_hgb,'logNSE persistence':d.logNSE_persist,'logNSE HGB':d.logNSE_hgb})
+        t.loc['**Median**']=t.median()
+        t=t.round(3)
+        w(f'base{h}',md(t,True))
 # T8 audit
 a=df.groupby('location').apply(lambda z: pd.Series({'Zero P days':f'{(z[P]==0).mean()*100:.0f}%','P≠rain days':int(((z[P]-z.rain_mm)>0.05).sum()),'Repeated Q (ΔQ=0)':f'{(z[Q].diff()==0).mean()*100:.0f}%','Q<0.01':f'{(z[Q]<0.01).mean()*100:.1f}%','Mean temp °C':round(z.temperature_mean_c.mean(),1)})).loc[order]
 w('audit',md(a,True))
