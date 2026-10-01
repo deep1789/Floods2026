@@ -12,7 +12,7 @@ Floods in Nepal are produced by a mixture of mechanisms: monsoon rainfall on wet
 
 The study has four parts: a data audit, a leakage-safe forecasting benchmark, process analyses, and negative controls. First, a *data audit* characterises what the panel can and cannot support. Preliminary results already show that the discharge values are grid-cell model output whose magnitudes for the large rivers (for example a mean of 0.8 m³/s for the Karnali at Chisapani) are orders of magnitude below what a gauge on that river would record, that 16.7 % of Khokana days are exactly zero, and that the July 2025 Rasuwagadhi flash flood leaves no visible signal in the data. Second, we define a *leakage-safe forecasting benchmark* with per-site and pooled models at 1-, 3- and 7-day horizons, evaluated with NSE, KGE, log-space skill and event-based scores. Third, we study *process questions* the panel can honestly answer: rainfall-to-discharge lag structure, antecedent soil-moisture control, extreme-value behaviour of precipitation and discharge, and cross-basin synchrony. Fourth, we examine *what the data cannot answer* and use the three documented glacier- and flash-flood events as negative controls.
 
-We then ran the full protocol on the dataset: causal feature construction with automated leakage tests, four baselines, a pooled gradient-boosted model, a ten-seed joint LSTM, and three validation schemes (chronological, leave-one-monsoon-out and leave-one-location-out), with Diebold–Mariano tests and block-bootstrap intervals. Persistence is a hard baseline (median NSE 0.953 at one day, 0.867 at three), and **no model dominates it**: boosting is best at one day, a simple per-site ridge distributed-lag model is the steadiest at three days and beats persistence at all ten locations under leave-one-monsoon-out, and the LSTM helps most at seven days, where single seeds vary by 0.04 in log-NSE. Rankings change with the split, and a first-pass boosting result moved by 0.035 NSE when the feature set changed. Process analyses give a response time of one to three days at every location after removing seasonality, **no detectable effect of antecedent soil moisture** on event amplification (310 events, p = 0.91) or on forecast skill, and **no evidence of upstream-leads-downstream behaviour** beyond common rainfall. A residual check confirms that the September 2024 storm stands out clearly, while the three glacier- and flash-flood events leave no trace. We argue that the most useful contributions of this dataset are an audited, leakage-tested multi-basin benchmark and an explicit statement of what daily modelled data cannot show.
+We then ran the full protocol on the dataset: causal feature construction with automated leakage tests, four baselines, a pooled gradient-boosted model, a ten-seed joint LSTM, and three validation schemes (chronological, leave-one-monsoon-out and leave-one-location-out), with Diebold–Mariano tests and block-bootstrap intervals. Persistence is a hard baseline (median NSE 0.953 at one day, 0.867 at three), and **the learned models are barely distinguishable from each other**: after bounded nested tuning, boosting, an LSTM, a Transformer-style network and graph networks lie within about 0.02 log-NSE of one another, beat persistence at 6–9 of 10 locations, and do so significantly at only 1–4. A simple per-site ridge distributed-lag model beats persistence at all ten locations under leave-one-monsoon-out, explicit river-network connectivity does not help, and tuning changed the boosted model's three-day and seven-day NSE by 0.037 and 0.116, so conclusions drawn from untuned comparisons are unreliable. Process analyses give a response time of one to three days at every location after removing seasonality, **no detectable effect of antecedent soil moisture** on event amplification (310 events, p = 0.91) or on forecast skill, and **no evidence of upstream-leads-downstream behaviour** beyond common rainfall. A residual check confirms that the September 2024 storm stands out clearly, while the three glacier- and flash-flood events leave no trace. We argue that the most useful contributions of this dataset are an audited, leakage-tested multi-basin benchmark and an explicit statement of what daily modelled data cannot show.
 
 **Keywords:** Nepal; flood forecasting; GloFAS; Open-Meteo; soil moisture; river discharge; machine learning; extreme value theory; transboundary hydrology.
 
@@ -631,7 +631,7 @@ For precipitation and for discharge (in normalised form) we fit peaks-over-thres
 
 **Feasibility.** With 1,339 days per site and only about 4–5 monsoon seasons, tail inference is weak. We therefore refuse to report 50- or 100-year return levels and we keep extreme-value results qualitative and comparative.
 
-### 7.6 Scenario and sensitivity analysis — *exploratory*
+### 7.6 Scenario and sensitivity analysis — *exploratory (done; Section 8.10, with a negative methodological result)*
 
 Because the forecasting models are differentiable (neural) or cheap to evaluate (trees), they can be used for *counterfactual sensitivity* analysis: how much would modelled discharge change if the same storm fell on drier antecedent soil? Perturb $\theta^*$ by $\pm1\sigma$ and the 3-day rainfall by multiplicative factors $\lambda\in\{0.8,1.0,1.2\}$, and report the change in peak. This is a statement about the learned model and the modelled system, not about the real catchment, and is labelled as such. A hurdle-gamma rainfall generator (Section 4.4) can create synthetic rainfall for stress-testing.
 
@@ -639,7 +639,7 @@ Because the forecasting models are differentiable (neural) or cheap to evaluate 
 
 Using a wavelet coherence or a simple lagged correlation of prewhitened series, test whether discharge at Rasuwagadhi leads discharge at Devghat (Trishuli into Narayani), and whether Bahrabise leads Chatara. Cross-correlation of the *precipitation* series (Table in §8.2) shows that adjacent eastern sites share rainfall (Chatara–Belsot 0.85; Bahrabise–Khokana 0.85) but that Rasuwagadhi is relatively decoupled from all others (0.46–0.61). Any "upstream leads downstream" result must be tested against the null of common rainfall forcing, for example with a Granger-type regression that conditions on the local precipitation series, since a common storm can induce an apparent lead–lag without any hydraulic connection.
 
-### 7.8 Anomaly detection (T5) — *exploratory and useful as a diagnostic*
+### 7.8 Anomaly detection (T5) — *exploratory and useful as a diagnostic (done; Sections 8.9–8.10)*
 
 Train an LSTM autoencoder or an isolation forest on normal behaviour and score the reconstruction error of the rainfall–discharge relationship. A flood whose discharge response is *large relative to rainfall* (Kusum on 28 September 2024, or hypothetical glacier-driven rises) should produce a high residual, while a flood fully explained by rainfall should not. This gives a principled operational definition of a "non-rainfall-explained" event, and is evaluated against the documented-event list in Section 8.5, with the important proviso that the list has only a handful of entries.
 
@@ -835,9 +835,9 @@ These controls are as important as the positive one: they show that **modelled d
 
 The implementation (`paper/floodlab/`, run by `run_benchmark.py`, `run_lstm.py`, `evaluate.py`, `evaluate2.py`) follows Algorithms 1–4 and the protocol of Section 6. Before any model was run, `tests/test_leakage.py` passed three tests: (a) all 28 features at origins up to a cutoff are unchanged when every observation after the cutoff is randomly rescaled; (b) the predictions of a model fitted before the cutoff are unchanged by the same perturbation; and (c) a deliberately leaky feature (a centred rolling mean) *is* detected, so the test can fail. All fitted quantities (soil-moisture and discharge climatology, recession constants, thresholds, scalers) use the training period only.
 
-**What was run.** Baselines B0–B3; a pooled `HistGradientBoostingRegressor` on the increment $\Delta y_{t+h}$ (28 features plus site and elevation, 400 iterations, learning rate 0.05, 15 leaves, $L_2=1$; **no hyperparameter search was run**); five-level quantile versions of that model at $h=1,3$; and a joint multi-site LSTM (30-day window, 12 dynamic inputs, 48 hidden units, site embedding, three multi-horizon heads, dropout 0.3, AdamW, early stopping on the most recent 15 % of training dates) with **10 seeds** averaged. Splits: chronological (train to 31 Aug 2025, test 1 Sep 2025–31 Aug 2026); leave-one-monsoon-out (LOMO) over June–September of 2023–2026 with a 7-day purge before and a 30-day purge after each held-out block; forward chaining for the 2025 and 2026 monsoons (which the LSTM uses in place of LOMO); and chronological leave-one-location-out (LOLO). Statistical comparisons use the Diebold–Mariano test with a Newey–West variance on squared log-space errors, with Benjamini–Hochberg control within each split scheme, and the paired stationary bootstrap (Algorithm 4; block mean 10 days; 200 replicates) for skill intervals. Temporal Fusion Transformer and graph-network arms were **not** run.
+**What was run.** Baselines B0–B3; a pooled `HistGradientBoostingRegressor` on the increment $\Delta y_{t+h}$ (28 features plus site and elevation; the main configuration is 400 iterations, learning rate 0.05, 15 leaves, $L_2=1$, and a tuned version is reported in Section 8.10); five-level quantile versions of that model at $h=1,3$; and a joint multi-site LSTM (30-day window, 12 dynamic inputs, 48 hidden units, site embedding, three multi-horizon heads, dropout 0.3, AdamW, early stopping on the most recent 15 % of training dates) with **10 seeds** averaged. Splits: chronological (train to 31 Aug 2025, test 1 Sep 2025–31 Aug 2026); leave-one-monsoon-out (LOMO) over June–September of 2023–2026 with a 7-day purge before and a 30-day purge after each held-out block; forward chaining for the 2025 and 2026 monsoons (which the LSTM uses in place of LOMO); and chronological leave-one-location-out (LOLO). Statistical comparisons use the Diebold–Mariano test with a Newey–West variance on squared log-space errors, with Benjamini–Hochberg control within each split scheme, and the paired stationary bootstrap (Algorithm 4; block mean 10 days; 200 replicates) for skill intervals. A simplified Transformer-style network, graph networks and nested hyperparameter tuning are reported in Section 8.10; the reference Temporal Fusion Transformer was not used.
 
-**Table 14. Median across the ten locations of NSE (raw $Q$) and log-NSE ($\log(1+Q)$) at horizons $h=1,3,7$ days.** B2 is the seasonal climatology, B3 the per-site ridge distributed-lag model, B1 recession-persistence. The LSTM was run under forward chaining rather than LOMO (blank cells).
+**Table 14. Median across the ten locations of NSE (raw $Q$) and log-NSE ($\log(1+Q)$) at horizons $h=1,3,7$ days.** B2 is the seasonal climatology, B3 the per-site ridge distributed-lag model, B1 recession-persistence. The LSTM and the Transformer-style and graph networks were run under forward chaining rather than LOMO (blank cells); `_tuned` rows use the nested search of Section 8.10 and exist for the chronological split only here.
 
 | Split | Model | h=1 NSE | h=1 logNSE | h=3 NSE | h=3 logNSE | h=7 NSE | h=7 logNSE | KGE h=3 |
 |---|---|---|---|---|---|---|---|---|
@@ -847,28 +847,64 @@ The implementation (`paper/floodlab/`, run by `run_benchmark.py`, `run_lstm.py`,
 | Chronological | B3_ARX | 0.958 | 0.984 | 0.867 | 0.954 | 0.747 | 0.891 | 0.872 |
 | Chronological | HGB | 0.964 | 0.987 | 0.850 | 0.947 | 0.687 | 0.868 | 0.879 |
 | Chronological | LSTM | 0.955 | 0.986 | 0.862 | 0.955 | 0.768 | 0.909 | 0.889 |
+| Chronological | HGB_tuned | 0.965 | 0.987 | 0.887 | 0.957 | 0.803 | 0.899 | 0.901 |
+| Chronological | LSTM_tuned | 0.957 | 0.986 | 0.862 | 0.954 | 0.755 | 0.906 | 0.898 |
+| Chronological | TFT_lite | 0.957 | 0.983 | 0.892 | 0.952 | 0.776 | 0.891 | 0.888 |
+| Chronological | GRAPH_none | 0.957 | 0.985 | 0.873 | 0.957 | 0.772 | 0.907 | 0.904 |
+| Chronological | GRAPH_phys | 0.955 | 0.985 | 0.857 | 0.956 | 0.683 | 0.904 | 0.920 |
+| Chronological | GRAPH_learned | 0.959 | 0.985 | 0.871 | 0.957 | 0.778 | 0.907 | 0.927 |
 | Leave-one-monsoon-out | B0_persistence | 0.771 | 0.942 | 0.383 | 0.795 | 0.128 | 0.553 | 0.696 |
 | Leave-one-monsoon-out | B1_recession | 0.771 | 0.942 | 0.382 | 0.796 | 0.119 | 0.546 | 0.696 |
 | Leave-one-monsoon-out | B2_climatology | 0.290 | 0.606 | 0.276 | 0.590 | 0.249 | 0.555 | 0.393 |
 | Leave-one-monsoon-out | B3_ARX | 0.820 | 0.951 | 0.546 | 0.829 | 0.329 | 0.665 | 0.708 |
 | Leave-one-monsoon-out | HGB | 0.880 | 0.962 | 0.517 | 0.847 | 0.155 | 0.539 | 0.660 |
 | Leave-one-monsoon-out | LSTM |  |  |  |  |  |  |  |
-| Forward chaining | B0_persistence | 0.909 | 0.959 | 0.769 | 0.874 | 0.473 | 0.634 | 0.876 |
-| Forward chaining | B1_recession | 0.909 | 0.959 | 0.769 | 0.874 | 0.463 | 0.634 | 0.876 |
-| Forward chaining | B2_climatology | 0.517 | 0.653 | 0.500 | 0.643 | 0.443 | 0.573 | 0.680 |
-| Forward chaining | B3_ARX | 0.917 | 0.959 | 0.810 | 0.878 | 0.531 | 0.723 | 0.870 |
-| Forward chaining | HGB | 0.932 | 0.961 | 0.753 | 0.845 | 0.410 | 0.603 | 0.819 |
-| Forward chaining | LSTM | 0.931 | 0.962 | 0.807 | 0.869 | 0.498 | 0.692 | 0.839 |
+| Leave-one-monsoon-out | HGB_tuned |  |  |  |  |  |  |  |
+| Leave-one-monsoon-out | LSTM_tuned |  |  |  |  |  |  |  |
+| Leave-one-monsoon-out | TFT_lite |  |  |  |  |  |  |  |
+| Leave-one-monsoon-out | GRAPH_none |  |  |  |  |  |  |  |
+| Leave-one-monsoon-out | GRAPH_phys |  |  |  |  |  |  |  |
+| Leave-one-monsoon-out | GRAPH_learned |  |  |  |  |  |  |  |
+| Forward chaining (2025 and 2026 folds) | B0_persistence | 0.909 | 0.959 | 0.769 | 0.874 | 0.473 | 0.634 | 0.876 |
+| Forward chaining (2025 and 2026 folds) | B1_recession | 0.909 | 0.959 | 0.769 | 0.874 | 0.463 | 0.634 | 0.876 |
+| Forward chaining (2025 and 2026 folds) | B2_climatology | 0.517 | 0.653 | 0.500 | 0.643 | 0.443 | 0.573 | 0.680 |
+| Forward chaining (2025 and 2026 folds) | B3_ARX | 0.917 | 0.959 | 0.810 | 0.878 | 0.531 | 0.723 | 0.870 |
+| Forward chaining (2025 and 2026 folds) | HGB | 0.932 | 0.961 | 0.753 | 0.845 | 0.410 | 0.603 | 0.819 |
+| Forward chaining (2025 and 2026 folds) | LSTM | 0.931 | 0.962 | 0.807 | 0.869 | 0.498 | 0.692 | 0.839 |
+| Forward chaining (2025 and 2026 folds) | HGB_tuned |  |  |  |  |  |  |  |
+| Forward chaining (2025 and 2026 folds) | LSTM_tuned |  |  |  |  |  |  |  |
+| Forward chaining (2025 and 2026 folds) | TFT_lite | 0.936 | 0.962 | 0.849 | 0.885 | 0.640 | 0.732 | 0.848 |
+| Forward chaining (2025 and 2026 folds) | GRAPH_none | 0.926 | 0.959 | 0.797 | 0.867 | 0.581 | 0.677 | 0.862 |
+| Forward chaining (2025 and 2026 folds) | GRAPH_phys | 0.922 | 0.960 | 0.806 | 0.882 | 0.612 | 0.727 | 0.873 |
+| Forward chaining (2025 and 2026 folds) | GRAPH_learned | 0.923 | 0.961 | 0.799 | 0.886 | 0.602 | 0.722 | 0.872 |
+| Forward chaining, 2026 fold only | B0_persistence | 0.924 | 0.956 | 0.797 | 0.854 | 0.501 | 0.600 | 0.859 |
+| Forward chaining, 2026 fold only | B1_recession | 0.924 | 0.956 | 0.797 | 0.854 | 0.501 | 0.598 | 0.859 |
+| Forward chaining, 2026 fold only | B2_climatology | 0.335 | 0.602 | 0.326 | 0.587 | 0.294 | 0.555 | 0.641 |
+| Forward chaining, 2026 fold only | B3_ARX | 0.930 | 0.962 | 0.831 | 0.888 | 0.644 | 0.739 | 0.870 |
+| Forward chaining, 2026 fold only | HGB | 0.933 | 0.968 | 0.753 | 0.853 | 0.519 | 0.608 | 0.810 |
+| Forward chaining, 2026 fold only | LSTM | 0.916 | 0.954 | 0.746 | 0.855 | 0.605 | 0.759 | 0.813 |
+| Forward chaining, 2026 fold only | HGB_tuned | 0.932 | 0.964 | 0.830 | 0.889 | 0.687 | 0.747 | 0.847 |
+| Forward chaining, 2026 fold only | LSTM_tuned | 0.921 | 0.954 | 0.760 | 0.857 | 0.554 | 0.734 | 0.820 |
+| Forward chaining, 2026 fold only | TFT_lite | 0.932 | 0.958 | 0.818 | 0.880 | 0.640 | 0.739 | 0.858 |
+| Forward chaining, 2026 fold only | GRAPH_none | 0.922 | 0.960 | 0.745 | 0.878 | 0.591 | 0.732 | 0.838 |
+| Forward chaining, 2026 fold only | GRAPH_phys | 0.921 | 0.958 | 0.763 | 0.874 | 0.651 | 0.745 | 0.851 |
+| Forward chaining, 2026 fold only | GRAPH_learned | 0.919 | 0.960 | 0.749 | 0.877 | 0.639 | 0.758 | 0.843 |
 
 
 **Table 15. Number of locations (of 10) at which a model beats persistence in log-space MSE, and how many of those differences are significant after BH correction.** "Sig." means $q<0.05$ on the Diebold–Mariano test.
 
 | Split | Model | h=1 | h=3 | h=7 |
 |---|---|---|---|---|
-| chrono | B1_recession | 8/10 better; 5 sig.; 0 sig. worse | 7/10 better; 5 sig.; 0 sig. worse | 6/10 better; 3 sig.; 0 sig. worse |
-| chrono | B3_ARX | 9/10 better; 2 sig.; 1 sig. worse | 8/10 better; 2 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse |
+| chrono | B1_recession | 8/10 better; 5 sig.; 0 sig. worse | 7/10 better; 4 sig.; 0 sig. worse | 6/10 better; 3 sig.; 0 sig. worse |
+| chrono | B3_ARX | 9/10 better; 2 sig.; 1 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse |
 | chrono | HGB | 7/10 better; 1 sig.; 0 sig. worse | 4/10 better; 0 sig.; 0 sig. worse | 5/10 better; 1 sig.; 0 sig. worse |
 | chrono | LSTM | 6/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 2 sig.; 0 sig. worse |
+| chrono | HGB_tuned | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse |
+| chrono | LSTM_tuned | 6/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse |
+| chrono | TFT_lite | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 9/10 better; 2 sig.; 0 sig. worse |
+| chrono | GRAPH_none | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 2 sig.; 0 sig. worse | 8/10 better; 4 sig.; 0 sig. worse |
+| chrono | GRAPH_phys | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 2 sig.; 0 sig. worse |
+| chrono | GRAPH_learned | 9/10 better; 1 sig.; 0 sig. worse | 8/10 better; 2 sig.; 0 sig. worse | 8/10 better; 3 sig.; 0 sig. worse |
 | lomo | B1_recession | 8/10 better; 0 sig.; 0 sig. worse | 6/10 better; 0 sig.; 0 sig. worse | 1/10 better; 0 sig.; 0 sig. worse |
 | lomo | B3_ARX | 10/10 better; 7 sig.; 0 sig. worse | 10/10 better; 6 sig.; 0 sig. worse | 10/10 better; 5 sig.; 0 sig. worse |
 | lomo | HGB | 9/10 better; 5 sig.; 0 sig. worse | 9/10 better; 2 sig.; 0 sig. worse | 6/10 better; 3 sig.; 0 sig. worse |
@@ -876,15 +912,29 @@ The implementation (`paper/floodlab/`, run by `run_benchmark.py`, `run_lstm.py`,
 | fc | B3_ARX | 9/10 better; 3 sig.; 0 sig. worse | 9/10 better; 1 sig.; 0 sig. worse | 10/10 better; 1 sig.; 0 sig. worse |
 | fc | HGB | 6/10 better; 1 sig.; 0 sig. worse | 5/10 better; 1 sig.; 0 sig. worse | 6/10 better; 1 sig.; 0 sig. worse |
 | fc | LSTM | 6/10 better; 1 sig.; 0 sig. worse | 7/10 better; 1 sig.; 0 sig. worse | 7/10 better; 1 sig.; 0 sig. worse |
+| fc | TFT_lite | 10/10 better; 2 sig.; 0 sig. worse | 9/10 better; 2 sig.; 0 sig. worse | 8/10 better; 2 sig.; 0 sig. worse |
+| fc | GRAPH_none | 8/10 better; 2 sig.; 0 sig. worse | 7/10 better; 1 sig.; 0 sig. worse | 7/10 better; 1 sig.; 0 sig. worse |
+| fc | GRAPH_phys | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse |
+| fc | GRAPH_learned | 9/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse |
+| fc26 | B1_recession | 2/10 better; 0 sig.; 0 sig. worse | 2/10 better; 0 sig.; 0 sig. worse | 1/10 better; 0 sig.; 0 sig. worse |
+| fc26 | B3_ARX | 9/10 better; 0 sig.; 0 sig. worse | 8/10 better; 0 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse |
+| fc26 | HGB | 9/10 better; 0 sig.; 0 sig. worse | 6/10 better; 0 sig.; 0 sig. worse | 6/10 better; 0 sig.; 0 sig. worse |
+| fc26 | LSTM | 5/10 better; 0 sig.; 0 sig. worse | 6/10 better; 0 sig.; 0 sig. worse | 7/10 better; 1 sig.; 0 sig. worse |
+| fc26 | HGB_tuned | 9/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse | 8/10 better; 1 sig.; 0 sig. worse |
+| fc26 | LSTM_tuned | 5/10 better; 0 sig.; 0 sig. worse | 6/10 better; 0 sig.; 0 sig. worse | 7/10 better; 1 sig.; 0 sig. worse |
+| fc26 | TFT_lite | 6/10 better; 0 sig.; 0 sig. worse | 7/10 better; 0 sig.; 0 sig. worse | 6/10 better; 1 sig.; 0 sig. worse |
+| fc26 | GRAPH_none | 8/10 better; 0 sig.; 0 sig. worse | 7/10 better; 0 sig.; 0 sig. worse | 8/10 better; 0 sig.; 0 sig. worse |
+| fc26 | GRAPH_phys | 7/10 better; 0 sig.; 0 sig. worse | 7/10 better; 0 sig.; 0 sig. worse | 8/10 better; 0 sig.; 0 sig. worse |
+| fc26 | GRAPH_learned | 7/10 better; 0 sig.; 0 sig. worse | 7/10 better; 0 sig.; 0 sig. worse | 7/10 better; 0 sig.; 0 sig. worse |
 | lolo | HGB | 5/10 better; 0 sig.; 0 sig. worse | 3/10 better; 0 sig.; 0 sig. worse | 5/10 better; 0 sig.; 0 sig. worse |
 | lolo | LSTM | 7/10 better; 1 sig.; 2 sig. worse | 6/10 better; 1 sig.; 0 sig. worse | 7/10 better; 1 sig.; 0 sig. worse |
 
 
 The picture is more nuanced than the first benchmark of Section 8.4 suggested.
 
-1. **No model dominates.** The one-day horizon favours the pooled boosted model under the chronological split (median NSE 0.964 vs 0.953 for persistence) and under LOMO (0.880 vs 0.771), but under the chronological split it beats persistence at only 7 of 10 locations and the improvement is significant at one of them (Table 15). At three and seven days the ridge ARX model is the steadiest: under LOMO it beats persistence at **all ten** locations at every horizon and significantly so at 7, 6 and 5 of them; under forward chaining it does so at 9, 9 and 10 locations. Boosting is better at $h=1$ but is not reliably better than persistence at $h=3$ (4 of 10 locations under the chronological split) or $h=7$.
+1. **No model dominates.** The one-day horizon favours the pooled boosted model under the chronological split (median NSE 0.964 vs 0.953 for persistence) and under LOMO (0.880 vs 0.771), but under the chronological split it beats persistence at only 7 of 10 locations and the improvement is significant at one of them (Table 15). At three and seven days the ridge ARX model is the steadiest: under LOMO it beats persistence at **all ten** locations at every horizon and significantly so at 7, 6 and 5 of them; under forward chaining it does so at 9, 9 and 10 locations. The untuned boosted model is better at $h=1$ but not reliably better than persistence at $h=3$ (4 of 10 locations under the chronological split) or $h=7$; **tuning removes most of that weakness** (Section 8.10).
 2. **The advantage grows with difficulty.** The LOMO test blocks contain only monsoon months, when flows change rapidly, so persistence is much weaker there (median NSE 0.771, 0.383 and 0.128 at 1, 3 and 7 days) than on the chronological test window (0.953, 0.867, 0.752). The ARX model's NSE gains at $h=3$ and $h=7$ are +0.16 and +0.20 under LOMO and about +0.00 and −0.01 under the chronological split. Model rankings are therefore *split-dependent*, which is the main reason a single split is insufficient.
-3. **The LSTM helps most at the longest horizon.** At $h=7$ under the chronological split its median log-NSE is 0.909 against 0.869 for persistence, 0.891 for ARX and 0.868 for boosting, and under forward chaining 0.692 against 0.634 (ARX 0.723). At one day it is no better than the other models (log-NSE 0.986 against 0.984 for ARX).
+3. **The LSTM helps most at the longest horizon.** At $h=7$ under the chronological split its median log-NSE is 0.909 against 0.869 for persistence, 0.891 for ARX and 0.868 for default boosting (0.899 after tuning, Section 8.10), and under forward chaining 0.692 against 0.634 (ARX 0.723). At one day it is no better than the other models (log-NSE 0.986 against 0.984 for ARX).
 4. **Seed variability is large relative to model differences.** Across ten seeds the chronological-split median log-NSE at $h=7$ ranges from 0.871 to 0.909 (mean 0.894, standard deviation 0.012), so a single seed can fall at or below the persistence value (0.869). The ten-seed ensemble (0.909) is better than the typical seed.
 
 **Table 16. Seed variability of the LSTM (median log-NSE across locations, chronological split).**
@@ -896,7 +946,7 @@ The picture is more nuanced than the first benchmark of Section 8.4 suggested.
 | 7.0000 | 0.8936 | 0.0120 | 0.8714 | 0.9086 | 0.9088 |
 
 
-5. **The first-pass number was fragile.** The preliminary pooled boosted model of Section 8.4 had a median NSE of 0.885 at $h=3$ on the same split; the version with the full 28-feature set and $L_2$ regularisation has 0.850. Both are single configurations with no tuning, and a difference of 0.03 from feature and regularisation details is comparable to the gaps between models in Table 14. We therefore do not rank the models on the chronological split alone.
+5. **The first-pass number was fragile, and tuning mattered.** The preliminary pooled boosted model of Section 8.4 had a median NSE of 0.885 at $h=3$ on the same split; the version with the full 28-feature set and $L_2$ regularisation has 0.850. Both are single configurations with no tuning, and a difference of 0.03 from feature and regularisation details is comparable to the gaps between models in Table 14. We therefore do not rank the models on the chronological split alone.
 
 **Table 17. Median log-NSE across locations for each held-out monsoon (LOMO for the baselines, ARX and boosting; forward chaining for all models).** Blank LSTM cells are LOMO folds for which the LSTM was not run.
 
@@ -978,6 +1028,14 @@ The by-fold results show the effect of year. The 2024 monsoon (which contains th
 | HGB | 3 | 0.245 | 0.702 | 0.155 | 41 | 0.366 | 1.964 | -0.040 |
 | LSTM | 1 | 0.557 | 0.385 | 0.413 | 41 | 0.829 | 1.008 | -0.076 |
 | LSTM | 3 | 0.314 | 0.640 | 0.201 | 41 | 0.366 | 1.633 | 0.019 |
+| HGB_tuned | 1 | 0.566 | 0.318 | 0.448 | 41 | 0.854 | 0.878 | -0.045 |
+| HGB_tuned | 3 | 0.294 | 0.615 | 0.200 | 41 | 0.415 | 2.083 | -0.087 |
+| LSTM_tuned | 1 | 0.585 | 0.367 | 0.437 | 41 | 0.805 | 1.008 | -0.074 |
+| LSTM_tuned | 3 | 0.294 | 0.639 | 0.194 | 41 | 0.390 | 1.357 | 0.017 |
+| TFT_lite | 1 | 0.623 | 0.383 | 0.449 | 41 | 0.854 | 0.930 | -0.036 |
+| TFT_lite | 3 | 0.314 | 0.605 | 0.212 | 41 | 0.390 | 1.906 | -0.100 |
+| GRAPH_phys | 1 | 0.575 | 0.351 | 0.439 | 41 | 0.854 | 0.950 | -0.053 |
+| GRAPH_phys | 3 | 0.275 | 0.632 | 0.187 | 41 | 0.341 | 2.469 | -0.096 |
 
 
 **Probabilistic skill.** The quantile boosted model gives 90 % intervals with a coverage of 0.870 at $h=1$ and 0.848 at $h=3$, slightly below nominal, but only 0.736 and 0.539 on days above the training 95th percentile, i.e. **the intervals are least reliable when high flows are the question**. The approximate CRPS is 0.029 (one day) and 0.054 (three days) in log units. Coverage by location ranges from 0.82 to 0.91 at one day and from 0.79 to 0.89 at three.
@@ -1213,9 +1271,109 @@ This check has two limitations that we state plainly. First, the detector flags 
 | Bhote Koshi flash flood | Rasuwagadhi | 2025-07-08 | flash flood (negative control) | HGB | 1.15 | 92.34 |
 
 
-### 8.10 Discussion of the full results
+### 8.10 Tuning, additional model arms and further analyses
 
-**What the numbers say.** Four results are robust. First, the target is highly persistent, so skill must be stated relative to persistence; at a one-day horizon and in the chronological test window the room for improvement is small (median NSE 0.953), and the median gains from learning are only 0.002 to 0.005 in log-NSE. Second, gains are concentrated where persistence is weakest: flashy or quantised series (Khokana, Chatara), and the monsoon-only evaluation of LOMO, where the ARX model improves NSE by +0.16 at three days. Third, **model ranking depends on the split**, the horizon and the seed: boosting is best at $h=1$, the LSTM at $h=7$ on the chronological test, the ARX model at $h=3$ and under LOMO, and the first-pass boosting result moved by 0.035 NSE with a change of feature set. Fourth, **the signal is in the rainfall and flow histories**: the ablation shows that rainfall features and the flow lags carry the skill, while soil moisture, antecedent rainfall indices, temperature and humidity add no detectable skill in this modelled system.
+**Nested hyperparameter search (boosting and LSTM).** The reported test results of Section 8.6 used fixed configurations. We then ran a bounded, nested search in which the final test period was never touched: the inner folds are the 2023, 2024 and 2025 monsoons *inside the training period* (before 1 September 2025), each held out in turn with the same 7-day and 30-day purge, and the criterion is the median across locations of log-space NSE. For boosting, 30 random configurations plus the default were evaluated at each horizon; for the LSTM, the default plus 11 random configurations of hidden size, dropout, learning rate and weight decay, three seeds each, on a forward-chained inner fold (train before June 2025, validate on the 2025 monsoon). For boosting the selected configurations are all shallower and more regularised than the default (learning rate 0.02, minimum leaf size 50, 200 iterations, and 31 leaves at $h=1$ against 7 leaves at $h=3,7$), as expected for a small, strongly correlated data set. The inner score gain over the default is small at one day (0.961 against 0.955) and larger at seven (0.581 against 0.531), and the inner scores of the 31 candidates span 0.948–0.961 at $h=1$ and 0.452–0.581 at $h=7$, so the choice of configuration matters most at long horizons. Tuned results exist only for the chronological split and the 2026 forward-chaining fold, because tuning on seasons that later serve as LOMO folds would leak.
+
+**Tuning changed the boosting conclusion; it did not change the LSTM's.** On the chronological test window the tuned boosted model has a median NSE of 0.965, 0.887 and 0.803 at 1, 3 and 7 days against 0.964, 0.850 and 0.687 for the default configuration, and a median log-NSE of 0.987, 0.957 and 0.899 against 0.987, 0.947 and 0.868; it improves on the default at 9 of 10 locations at three and seven days (median log-NSE gain +0.010 and +0.023), and at all ten at seven days in the 2026 fold (+0.099). *The earlier statement that boosting loses to persistence at seven days (Section 8.6) was therefore largely an artefact of an untuned configuration.* The tuned boosted model beats persistence at 8 of 10 locations at every horizon (one significant in each case; Table 15). By contrast, the LSTM configuration chosen on the inner fold (hidden size 32, dropout 0.2, learning rate 0.003, weight decay 0.01) did not improve on the default on the test window (median log-NSE 0.986, 0.954, 0.906 against 0.986, 0.955, 0.909). The inner scores of the LSTM candidates range from 0.795 to 0.882 on a single validation monsoon, which mostly reflects configuration-and-seed noise and did not carry over to the test period.
+
+**Transformer-style and graph arms.** The reference Temporal Fusion Transformer was not used. We implemented a simplified variant ("TFT-lite": gated variable selection, an LSTM encoder, one self-attention layer over the 30-day window, a gated output head and a site embedding, without quantile outputs or known-future inputs) and a multi-site graph network (shared LSTM encoder per site, one graph-convolution layer, three variants: no edges, a fixed physical adjacency with two edges, Rasuwagadhi → Devghat and Bahrabise → Chatara, and a learned adjacency), each with 10 seeds averaged and default settings. Their median results are in Table 14. On the chronological split TFT-lite is slightly better than the LSTM (median NSE 0.892 against 0.862 at three days; log-NSE differences +0.001 to +0.005, better at 6–7 of 10 locations), and in forward chaining more clearly so (log-NSE +0.025 at $h=3$ and +0.056 at $h=7$ against the LSTM over the two folds, better at 9 and 8 of 10 locations). The mean variable-selection weights are highest for the discharge state (0.19) and the two seasonal terms (0.17 and 0.09) and lowest for soil moisture (0.04) and current rainfall (0.06); because the gate is not an importance measure, we read this only as agreeing with the ablation. **Explicit river connectivity did not help robustly.** Relative to the same network with no edges, the physical adjacency changes the median log-NSE by 0.000, −0.001 and −0.002 at 1, 3 and 7 days on the chronological split (better at 4, 2 and 4 of 10 locations) and by +0.001, +0.006 and +0.021 in forward chaining; the learned adjacency is +0.031 at seven days in forward chaining (9 of 10 locations) and about zero on the chronological split. With only four of ten locations connected by the physical graph, we do not expect a large effect, and the data do not show one.
+
+Table 14 and Table 15 show that **all learned models end up close together.** On the chronological split the tuned boosted model, the tuned and default LSTM, TFT-lite and the three graph variants have median log-NSE between 0.952 and 0.957 at three days and between 0.891 and 0.909 at seven, each beats persistence at 6–9 of 10 locations, and each difference from persistence is significant after multiple-comparison control at only 1–4 locations (the graph network without edges is significant at four locations at seven days, the most). The event-based scores (Table 20) show the same plateau: at one day CSI is 0.44–0.45 and the false-alarm ratio 0.32–0.38 for the tuned boosted model, TFT-lite, the graph network and ARX, against 0.40 and 0.43 for persistence.
+
+**Grouped permutation importance.** For the default pooled boosted model on the chronological test window, permuting a feature group within the test data raises the mean squared error (in the increment) by the percentages in Table 34. The flow-lag group dominates at every horizon (64 %, 70 % and 76 % at one, three and seven days). Current rainfall matters at one day (59 %) but not beyond (5 % at three days and −3 % at seven), because the rain of the target days is unknown; site and elevation matter more than expected (34 %, 23 %, 18 %), meaning that the model leans on site-specific behaviour; season adds 7–12 %. Soil moisture (1.1 %, −1.4 %, −1.1 %) and antecedent rainfall (2.7 %, −1.2 %, −0.1 %) are indistinguishable from zero, as in the ablation and the event analysis. TreeSHAP was not computed.
+
+**Table 34. Grouped permutation importance (percentage increase in test MSE of the increment when the group is permuted within the test window).**
+
+| Group | h=1 (% MSE increase) | h=3 (% MSE increase) | h=7 (% MSE increase) |
+|---|---|---|---|
+| flow lags | 64.4 | 70.0 | 76.4 |
+| site & elevation | 33.9 | 23.4 | 17.6 |
+| season | 7.3 | 11.6 | 6.6 |
+| current rain | 58.8 | 5.4 | -2.6 |
+| temperature, humidity, snow | 3.7 | 4.1 | 0.8 |
+| antecedent rain | 2.7 | -1.2 | -0.1 |
+| soil moisture | 1.1 | -1.4 | -1.1 |
+
+
+**Scenario analysis (Section 7.6).** We used a boosted model trained *without* the 2024 monsoon and perturbed its inputs at the origins 26 and 27 September 2024: soil-moisture anomaly ±1 standard deviation and rainfall features scaled by 0.8 and 1.2. The model is almost insensitive to these changes (Table 35): the predicted next-day discharge changes by −3.8 % to +2.1 % for the soil-moisture perturbations and by −4.3 % to +5.4 % for the rainfall scalings at the four locations. More importantly, the model cannot reproduce the storm: from the 27 September origin it predicts 12.5 m³/s at Khokana against an observed 57.6 and 851 m³/s at Kusum against 3,176 (about 75 % too low). Tree ensembles cannot extrapolate beyond the target range seen in training, and the storm exceeds the training range. **The scenario analysis therefore says nothing about catchment sensitivity; it documents a limitation of the model class for extreme events.** A defensible counterfactual analysis would need a model that extrapolates or a process model.
+
+**Table 35. Counterfactual perturbations, boosted model trained without the 2024 monsoon (origins 26 and 27 September 2024, $h=1$).**
+
+| Location | Origin | Scenario | Q_pred | change_vs_baseline_pct | Q_observed_next_day |
+|---|---|---|---|---|---|
+| Khokana | 2024-09-26 | baseline | 5.68 | 0.00 | 14.38 |
+| Khokana | 2024-09-26 | soil −1σ | 5.68 | 0.00 | 14.38 |
+| Khokana | 2024-09-26 | soil +1σ | 5.80 | 2.10 | 14.38 |
+| Khokana | 2024-09-26 | rain ×0.8 | 5.72 | 0.72 | 14.38 |
+| Khokana | 2024-09-26 | rain ×1.2 | 5.99 | 5.43 | 14.38 |
+| Khokana | 2024-09-26 | rain ×1.2 & soil +1σ | 6.12 | 7.64 | 14.38 |
+| Khokana | 2024-09-27 | baseline | 12.46 | 0.00 | 57.61 |
+| Khokana | 2024-09-27 | soil −1σ | 12.09 | -3.01 | 57.61 |
+| Khokana | 2024-09-27 | soil +1σ | 12.34 | -0.98 | 57.61 |
+| Khokana | 2024-09-27 | rain ×0.8 | 12.49 | 0.20 | 57.61 |
+| Khokana | 2024-09-27 | rain ×1.2 | 12.46 | 0.00 | 57.61 |
+| Khokana | 2024-09-27 | rain ×1.2 & soil +1σ | 12.34 | -0.98 | 57.61 |
+| Kusum | 2024-09-26 | baseline | 227.86 | 0.00 | 608.54 |
+| Kusum | 2024-09-26 | soil −1σ | 228.45 | 0.26 | 608.54 |
+| Kusum | 2024-09-26 | soil +1σ | 230.88 | 1.32 | 608.54 |
+| Kusum | 2024-09-26 | rain ×0.8 | 227.99 | 0.06 | 608.54 |
+| Kusum | 2024-09-26 | rain ×1.2 | 232.27 | 1.94 | 608.54 |
+| Kusum | 2024-09-26 | rain ×1.2 & soil +1σ | 235.35 | 3.29 | 608.54 |
+| Kusum | 2024-09-27 | baseline | 850.83 | 0.00 | 3175.87 |
+| Kusum | 2024-09-27 | soil −1σ | 818.87 | -3.76 | 3175.87 |
+| Kusum | 2024-09-27 | soil +1σ | 850.83 | 0.00 | 3175.87 |
+| Kusum | 2024-09-27 | rain ×0.8 | 837.59 | -1.56 | 3175.87 |
+| Kusum | 2024-09-27 | rain ×1.2 | 853.51 | 0.31 | 3175.87 |
+| Kusum | 2024-09-27 | rain ×1.2 & soil +1σ | 853.51 | 0.31 | 3175.87 |
+| Devghat | 2024-09-26 | baseline | 5.14 | 0.00 | 4.75 |
+| Devghat | 2024-09-26 | soil −1σ | 5.14 | 0.00 | 4.75 |
+| Devghat | 2024-09-26 | soil +1σ | 5.14 | 0.00 | 4.75 |
+| Devghat | 2024-09-26 | rain ×0.8 | 5.11 | -0.68 | 4.75 |
+| Devghat | 2024-09-26 | rain ×1.2 | 5.25 | 2.02 | 4.75 |
+| Devghat | 2024-09-26 | rain ×1.2 & soil +1σ | 5.25 | 2.02 | 4.75 |
+| Devghat | 2024-09-27 | baseline | 7.57 | 0.00 | 10.30 |
+| Devghat | 2024-09-27 | soil −1σ | 7.57 | 0.00 | 10.30 |
+| Devghat | 2024-09-27 | soil +1σ | 7.57 | 0.00 | 10.30 |
+| Devghat | 2024-09-27 | rain ×0.8 | 7.59 | 0.21 | 10.30 |
+| Devghat | 2024-09-27 | rain ×1.2 | 7.57 | 0.00 | 10.30 |
+| Devghat | 2024-09-27 | rain ×1.2 & soil +1σ | 7.57 | 0.00 | 10.30 |
+| Chatara | 2024-09-26 | baseline | 6.50 | 0.00 | 15.00 |
+| Chatara | 2024-09-26 | soil −1σ | 6.50 | 0.00 | 15.00 |
+| Chatara | 2024-09-26 | soil +1σ | 6.50 | 0.00 | 15.00 |
+| Chatara | 2024-09-26 | rain ×0.8 | 6.21 | -4.34 | 15.00 |
+| Chatara | 2024-09-26 | rain ×1.2 | 6.48 | -0.21 | 15.00 |
+| Chatara | 2024-09-26 | rain ×1.2 & soil +1σ | 6.48 | -0.21 | 15.00 |
+| Chatara | 2024-09-27 | baseline | 21.35 | 0.00 | 23.27 |
+| Chatara | 2024-09-27 | soil −1σ | 21.56 | 0.96 | 23.27 |
+| Chatara | 2024-09-27 | soil +1σ | 21.35 | 0.00 | 23.27 |
+| Chatara | 2024-09-27 | rain ×0.8 | 21.23 | -0.57 | 23.27 |
+| Chatara | 2024-09-27 | rain ×1.2 | 21.25 | -0.46 | 23.27 |
+| Chatara | 2024-09-27 | rain ×1.2 & soil +1σ | 21.25 | -0.46 | 23.27 |
+
+
+**Isolation-forest detector (Section 7.8).** An isolation forest fitted per location on six standardised features of the rainfall–discharge relationship (log-increment, current and lagged rain, 3-day rain, soil-moisture anomaly, discharge anomaly) with no event labels places the three September 2024 storm days at the 99.93rd percentile of each location's record, and the three non-rainfall events at ordinary levels: Chatara 69.8, Bahrabise 86.2 and Rasuwagadhi 81.3. This agrees with the residual check of Section 8.9, with the same caveat: the detector flags unusual rainfall–flow behaviour, not causes, and the negative controls are absent from the data.
+
+**Table 36. Isolation-forest percentile of the documented events (maximum over ±1 day).**
+
+| Location | Date | Event | max_score | percentile within site record |
+|---|---|---|---|---|
+| Kusum | 2024-09-28 | Sep-2024 storm (rain-driven) | 0.76 | 99.93 |
+| Khokana | 2024-09-28 | Sep-2024 storm (rain-driven) | 0.77 | 99.93 |
+| Devghat | 2024-09-29 | Sep-2024 storm (rain-driven) | 0.78 | 99.93 |
+| Chatara | 2024-08-16 | Thame GLOF, nearest location | 0.44 | 69.78 |
+| Bahrabise | 2024-08-16 | Thame GLOF, nearest Koshi site | 0.51 | 86.16 |
+| Rasuwagadhi | 2025-07-08 | Bhote Koshi flash flood | 0.48 | 81.30 |
+
+
+**Back-transformation.** The Duan smearing factor $\overline{e^{\hat\varepsilon}}$ computed on the training period is 1.002, 1.006 and 1.009 at 1, 3 and 7 days, and applying it changes the median NSE by −0.0001, −0.003 and −0.009; we therefore keep the plain `expm1` back-transformation used in all tables.
+
+**Leave-one-location-out over the full period.** Training the pooled model on nine locations over all dates and testing on the tenth over all dates, without site identity or elevation, gives a median log-NSE of 0.982, 0.949 and 0.910 at 1, 3 and 7 days against 0.983, 0.940 and 0.866 for persistence, with the model ahead at 7, 9 and 9 of 10 locations (median NSE 0.924, 0.806 and 0.728 against 0.885, 0.699 and 0.537). This variant is optimistic: the training sites include the *same dates* as the held-out site, so concurrent storms are in the training data, and it should be read as spatial transfer under shared weather rather than out-of-sample prediction. The chronological variant of Section 8.7 is the stricter test.
+
+
+### 8.11 Discussion of the full results
+
+**What the numbers say.** Four results are robust. First, the target is highly persistent, so skill must be stated relative to persistence; at a one-day horizon and in the chronological test window the room for improvement is small (median NSE 0.953), and the median gains from learning are only 0.002 to 0.005 in log-NSE. Second, gains are concentrated where persistence is weakest: flashy or quantised series (Khokana, Chatara), and the monsoon-only evaluation of LOMO, where the ARX model improves NSE by +0.16 at three days. Third, **model ranking depends on the split, the horizon, the seed and the tuning**: untuned boosting is best at $h=1$, the LSTM at $h=7$ on the chronological test, the ARX model at $h=3$ and under LOMO, and boosting moved by 0.037 NSE at three days and 0.116 at seven when its configuration was tuned; once tuned, boosting, the LSTM, a Transformer-style network and graph networks all lie within about 0.02 log-NSE of one another (0.005 at three days, 0.018 at seven). Complexity of the model class buys nothing detectable here. Fourth, **the signal is in the rainfall and flow histories**: the ablation and the permutation importance show that rainfall features and the flow lags carry the skill, while soil moisture, antecedent rainfall indices, temperature and humidity add no detectable skill in this modelled system. Fifth, **explicit connectivity does not help** (graph networks) and **extreme events are out of reach for tree models trained without them** (scenario analysis).
 
 **Why a headline percentage is hard to interpret.** The dataset page refers to a public notebook that reported a headline percentage on version 1. Without the label definition, split and baseline, such a number cannot be compared with anything. A classifier for "discharge above the site's 90th percentile" can reach a high accuracy by predicting the previous day's label, because high-flow days cluster in the monsoon, and accuracy is dominated by the majority class. The comparison that matters is with the persistence classifier, with precision–recall and event-level measures (Table 20), and under all three label definitions of Section 4.7. In our test window persistence already detects every event at one day (event POD 1.00) at a false-alarm ratio of 0.43; any claim of improvement has to be measured against that.
 
@@ -1235,7 +1393,7 @@ This check has two limitations that we state plainly. First, the detector flags 
 
 **External validity.** Four years (about 4.7 monsoon seasons by the end of August 2026, with the 2026 monsoon incomplete) is a short record that includes at least one record-breaking storm. Conclusions about the typical or the extreme must be framed accordingly. Results for ten locations cannot be extrapolated to all Nepali rivers, particularly the snow- and glacier-dominated headwaters.
 
-**Statistical conclusion validity.** Metric choice affects rankings (Section 8.4, point 4); we report both raw and log-space metrics plus event metrics. Multiple comparisons across sites, horizons and models are corrected by false-discovery-rate control. No hyperparameter search was run for any model in the reported results: all models use the fixed configurations of Section 8.6, so conclusions about the *relative* merit of model families are conditional on those settings.
+**Statistical conclusion validity.** Metric choice affects rankings (Section 8.4, point 4); we report both raw and log-space metrics plus event metrics. Multiple comparisons across sites, horizons and models are corrected by false-discovery-rate control. Hyperparameters were tuned only for boosting and the LSTM, with a bounded nested search (Section 8.10); the Transformer-style and graph networks use default settings, so conclusions about the relative merit of model families remain conditional on the search effort spent on each.
 
 **Data limitations.** Weather values are model/reanalysis-based; precipitation in steep terrain can be strongly biased, and soil moisture is a model variable. The elevation field has a plausibility problem at Chisapani (audit A7). Zeros in precipitation are genuine and retained. Quantisation of low flows (audit A5) must be handled.
 
@@ -1249,7 +1407,7 @@ This check has two limitations that we state plainly. First, the detector flags 
 
 ### 10.1 Implementation status
 
-**Table 34. What was implemented and run, and what remains.**
+**Table 37. What was implemented and run, and what remains.**
 
 | Plan item | Status | Where |
 |---|---|---|
@@ -1259,18 +1417,20 @@ This check has two limitations that we state plainly. First, the detector flags 
 | Algorithm 2 (purged blocked CV) | done (LOMO with 7-day pre- and 30-day post-purge) and forward chaining | `run_benchmark.py` |
 | Algorithms 3 and 4 (events, stationary bootstrap) | done | `floodlab/events.py`, `metrics.py` |
 | Baselines B0–B3 | done | `floodlab/models.py` |
-| Pooled boosting, quantile boosting | done, **no tuning** | Section 8.6 |
-| Joint LSTM, 10 seeds | done, **no tuning**, early stopping on latest 15 % of training dates | `floodlab/lstm.py` |
-| Temporal Fusion Transformer, graph model | **not run** | — |
+| Pooled boosting, quantile boosting | done; default and nested-tuned versions | Sections 8.6, 8.10 |
+| Joint LSTM, 10 seeds | done; default and nested-tuned versions; early stopping on latest 15 % of training dates | `floodlab/lstm.py` |
+| Transformer-style network, graph models | done as **simplified variants** (TFT-lite, three graph variants), default settings; the reference TFT was not used | `floodlab/nets.py` |
 | Chronological, LOMO and forward-chaining splits | done | Section 8.6 |
 | LOLO | done in the chronological variant only (target site's own recent flow is an input) | Section 8.7 |
 | Metrics, DM tests with BH, block-bootstrap intervals, event and quantile scores | done | `evaluate.py` |
-| Duan smearing back-transformation | **not used** (plain `expm1`) | — |
+| Duan smearing back-transformation | evaluated; negligible effect, plain `expm1` kept | Section 8.10 |
 | Lag weights, soil-moisture mixed model, ablation, POT/GPD, joint extremes, upstream–downstream, recession | done | `analyses.py`, `ablation.py` |
 | Wavelet coherence, profile-likelihood GPD intervals | **not run** (stationary bootstrap used instead) | — |
-| Scenario / counterfactual analysis (7.6) | **not run** | — |
-| Isolation forest / LSTM autoencoder (7.8) | **not run**; a residual-based check was done | Section 8.9 |
-| Gauge-data validation of discharge scale (A4); catchment attributes; SHAP | **not done** (data not available / not run) | Section 7.11 |
+| Scenario / counterfactual analysis (7.6) | done; shows the model class cannot extrapolate to the storm (negative result) | Section 8.10 |
+| Isolation forest (7.8) | done; LSTM autoencoder **not run**; residual-based check also done | Sections 8.9–8.10 |
+| Gauge-data validation of discharge scale (A4); catchment attributes | **not done**: data not available; network access to the Open-Meteo hosts is blocked here | Section 7.11, `fetch_extended.py` (untested) |
+| Grouped permutation importance | done; TreeSHAP **not run** | Section 8.10 |
+| LOLO over the full period | done (optimistic spatial-only variant) | Section 8.10 |
 
 ### 10.1b Reproducing the results
 
@@ -1280,6 +1440,9 @@ cd paper
 python tests/test_leakage.py        # leakage tests (must pass)
 python run_benchmark.py             # baselines, ridge ARX, boosting, quantile boosting; all splits
 python run_lstm.py 10 10 60         # joint LSTM: 10 seeds, 10 seeds for LOLO, up to 60 epochs
+python run_tune.py                  # nested boosting tuning (~4 min)
+python run_extra.py 10              # LSTM tuning, tuned HGB/LSTM, TFT-lite, graph networks (~30 min)
+python run_extras2.py               # scenarios, isolation forest, permutation importance, smearing, full-period LOLO
 python evaluate.py && python evaluate2.py
 python analyses.py && python ablation.py
 python build.py                     # assembles PAPER_PLAN.md

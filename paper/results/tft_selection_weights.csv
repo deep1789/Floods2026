@@ -1,0 +1,13 @@
+feature,mean_selection_weight
+y,0.19072148
+lp,0.055445008
+th_star,0.039889432
+temperature_mean_c,0.06321116
+relative_humidity_mean_pct,0.06514072
+dew_point_mean_c,0.09604399
+wind_speed_max_kmh,0.05414828
+precipitation_hours,0.053203475
+snowfrac,0.06738369
+sin_doy,0.09115662
+cos_doy,0.16758505
+dy,0.05607108

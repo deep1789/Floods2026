@@ -6,10 +6,16 @@ warnings.filterwarnings('ignore')
 df = data.load(); order = data.site_order(df)
 frames = [pd.read_csv('results/preds_tree.csv', parse_dates=['date', 'date_tgt'])]
 if os.path.exists('results/preds_lstm.csv'): frames.append(pd.read_csv('results/preds_lstm.csv', parse_dates=['date', 'date_tgt']))
+if os.path.exists('results/preds_extra.csv'): frames.append(pd.read_csv('results/preds_extra.csv', parse_dates=['date', 'date_tgt']))
 R = pd.concat(frames, ignore_index=True)
 R['Q_hat'] = np.clip(np.expm1(R.yhat), 0, None); R['Q_obs'] = np.expm1(R.y_obs)
 R['Q_per'] = np.expm1(R.y0)
-MAIN = ['B0_persistence', 'B1_recession', 'B2_climatology', 'B3_ARX', 'HGB', 'LSTM']
+NEW = ['HGB_tuned', 'LSTM_tuned', 'TFT_lite', 'GRAPH_none', 'GRAPH_phys', 'GRAPH_learned']
+MAIN = ['B0_persistence', 'B1_recession', 'B2_climatology', 'B3_ARX', 'HGB', 'LSTM'] + NEW
+# tuned models exist only for the chronological split and the 2026 forward-chaining fold: keep them out of the 2-fold 'fc' pool and report 'fc26' separately
+R = R[~((R.scheme == 'fc') & R.model.isin(['HGB_tuned', 'LSTM_tuned']))]
+R26 = R[(R.scheme == 'fc') & (R.fold.astype(str) == '2026')].copy(); R26['scheme'] = 'fc26'; R26 = pd.concat([R26, pd.concat(frames, ignore_index=True).query("scheme=='fc' and model in ['HGB_tuned','LSTM_tuned'] and fold.astype('str')=='2026'").assign(scheme='fc26')]); R26['Q_hat'] = np.clip(np.expm1(R26.yhat), 0, None); R26['Q_obs'] = np.expm1(R26.y_obs); R26['Q_per'] = np.expm1(R26.y0)
+R = pd.concat([R, R26], ignore_index=True)
 os.makedirs('tables2', exist_ok=True)
 
 def site_metrics(g):
@@ -56,13 +62,13 @@ def main_table(scheme, hs=(1, 3, 7)):
         g3 = M[(M.scheme == scheme) & (M.h == 3) & (M.model == m)]; r['KGE h=3'] = g3.KGE.median() if len(g3) else np.nan
         rows.append(r)
     return pd.DataFrame(rows)
-for sc in ('chrono', 'lomo', 'fc'):
+for sc in ('chrono', 'lomo', 'fc', 'fc26'):
     t = main_table(sc); t.to_csv(f'results/main_{sc}.csv', index=False); w(f'main_{sc}', md(t))
 
 # beat-persistence counts
 rows = []
-for sc in ('chrono', 'lomo', 'fc', 'lolo'):
-    for m in ['B1_recession', 'B3_ARX', 'HGB', 'LSTM']:
+for sc in ('chrono', 'lomo', 'fc', 'fc26', 'lolo'):
+    for m in ['B1_recession', 'B3_ARX', 'HGB', 'LSTM'] + NEW:
         r = {'Split': sc, 'Model': m}
         for h in (1, 3, 7):
             g = S[(S.scheme == sc) & (S.model == m) & (S.h == h)]
@@ -111,7 +117,7 @@ if len(SD):
 
 # ---- event metrics (chrono), threshold = training q95 per site
 rows = []
-for m in ['B0_persistence', 'B3_ARX', 'HGB', 'LSTM']:
+for m in ['B0_persistence', 'B3_ARX', 'HGB', 'LSTM', 'HGB_tuned', 'LSTM_tuned', 'TFT_lite', 'GRAPH_phys']:
     for h in (1, 3):
         a = dict(hits=0, false_alarms=0, misses=0); ne = nh = 0; te = []; pe = []
         for s, g in R[(R.scheme == 'chrono') & (R.model == m) & (R.h == h)].groupby('location'):
@@ -142,4 +148,15 @@ for h in (1, 3):
     rows.append({'h': h, 'mean pinball (5 levels)': pl, 'approx CRPS (=2x mean pinball)': 2 * pl, '90% interval coverage': cov, 'coverage on training-q95 high-flow days': cov_hi, 'mean width (log units)': wid, 'min site coverage': cov_s.min(), 'max site coverage': cov_s.max()})
 PR = pd.DataFrame(rows); PR.to_csv('results/prob.csv', index=False); w('prob', md(PR))
 pers = R[(R.scheme == 'chrono') & (R.model == 'B0_persistence') & (R.h.isin((1, 3)))]
+# graph ablation: sites where phys / learned adjacency beat 'none' (site-level log-NSE), and tuning effect
+rows = []
+for sc in ('chrono', 'fc', 'fc26'):
+    for h in (1, 3, 7):
+        g = lambda m: M[(M.scheme == sc) & (M.h == h) & (M.model == m)].set_index('location').logNSE
+        n0 = g('GRAPH_none')
+        for a, b, lab in (('GRAPH_phys', 'GRAPH_none', 'physical adjacency vs none'), ('GRAPH_learned', 'GRAPH_none', 'learned adjacency vs none'), ('GRAPH_none', 'LSTM', 'graph(no edges) vs LSTM'), ('HGB_tuned', 'HGB', 'tuned vs default HGB'), ('LSTM_tuned', 'LSTM', 'tuned vs default LSTM'), ('TFT_lite', 'LSTM', 'TFT-lite vs LSTM')):
+            x, y = g(a), g(b)
+            if len(x) == 0 or len(y) == 0: continue
+            d = (x - y).dropna(); rows.append({'Split': sc, 'h': h, 'Comparison': lab, 'median Δ log-NSE': d.median(), 'sites better': f'{(d > 0).sum()}/{len(d)}'})
+AB = pd.DataFrame(rows); AB.to_csv('results/arm_comparisons.csv', index=False); w('arm_comparisons', md(AB))
 print('written tables2:', sorted(os.listdir('tables2')))

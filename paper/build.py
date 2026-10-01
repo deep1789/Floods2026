@@ -5,7 +5,7 @@ def md(d, fmt='{:.3f}'):
     return h + '\n'.join('| ' + ' | '.join(fm(v) for v in r) + ' |' for r in d.values) + '\n'
 # combined main table
 rows = []
-for sc, lab in (('chrono', 'Chronological'), ('lomo', 'Leave-one-monsoon-out'), ('fc', 'Forward chaining')):
+for sc, lab in (('chrono', 'Chronological'), ('lomo', 'Leave-one-monsoon-out'), ('fc', 'Forward chaining (2025 and 2026 folds)'), ('fc26', 'Forward chaining, 2026 fold only')):
     t = pd.read_csv(f'results/main_{sc}.csv'); t.insert(0, 'Split', lab); rows.append(t)
 open('tables2/main_all.md', 'w').write(md(pd.concat(rows)))
 txt = '\n'.join(open(f'parts/p{i}.md').read() for i in (1, 2, 3, 4))

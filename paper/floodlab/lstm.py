@@ -32,10 +32,10 @@ def norm_stats(feat, train_mask):
         v = g[DYN].values; st[s] = (np.nanmean(v, 0), np.nanstd(v, 0) + 1e-6)
     return st
 
-def fit_predict(Xtr, Str, Ttr, Xte, Ste, nsite, seed, epochs=60, use_site=True, device='cpu', val=None):
+def fit_predict(Xtr, Str, Ttr, Xte, Ste, nsite, seed, epochs=60, use_site=True, device='cpu', val=None, hid=48, drop=0.3, lr=2e-3, wd=1e-3):
     torch.manual_seed(seed); np.random.seed(seed)
-    m = Net(Xtr.shape[2], nsite if use_site else 0).to(device)
-    opt = torch.optim.AdamW(m.parameters(), lr=2e-3, weight_decay=1e-3)
+    m = Net(Xtr.shape[2], nsite if use_site else 0, hid=hid, drop=drop).to(device)
+    opt = torch.optim.AdamW(m.parameters(), lr=lr, weight_decay=wd)
     # early stopping on the most recent 15% of training DATES (val = boolean mask over training rows, chronological), never on test data
     if val is None: raise ValueError('pass a chronological validation mask')
     tr_i, va_i = np.where(~val)[0], np.where(val)[0]
