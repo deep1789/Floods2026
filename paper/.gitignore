@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+results/preds_tree.csv
+results/preds_lstm.csv
+results/*.log
