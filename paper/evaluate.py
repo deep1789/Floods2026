@@ -119,6 +119,7 @@ if len(SD):
 rows = []
 for m in ['B0_persistence', 'B3_ARX', 'HGB', 'LSTM', 'HGB_tuned', 'LSTM_tuned', 'TFT_lite', 'GRAPH_phys']:
     for h in (1, 3):
+        if len(R[(R.scheme == 'chrono') & (R.model == m) & (R.h == h)]) == 0: continue
         a = dict(hits=0, false_alarms=0, misses=0); ne = nh = 0; te = []; pe = []
         for s, g in R[(R.scheme == 'chrono') & (R.model == m) & (R.h == h)].groupby('location'):
             g = g.sort_values('date'); u = g.thr95.iloc[0]
@@ -127,6 +128,7 @@ for m in ['B0_persistence', 'B3_ARX', 'HGB', 'LSTM', 'HGB_tuned', 'LSTM_tuned', 
             es = Ev.event_scores(g.Q_obs.values, g.Q_hat.values, u)
             ne += es['n_events']; nh += es['event_hits']
             if not np.isnan(es['timing_mae']): te.append(es['timing_mae']); pe.append(es['peak_rel_err'])
+        if a['hits'] + a['misses'] == 0: continue
         pod = a['hits'] / (a['hits'] + a['misses']); far = a['false_alarms'] / (a['hits'] + a['false_alarms']) if a['hits'] + a['false_alarms'] else np.nan
         csi = a['hits'] / (a['hits'] + a['false_alarms'] + a['misses'])
         rows.append({'Model': m, 'h': h, 'day POD': pod, 'day FAR': far, 'day CSI': csi, 'events': ne, 'event POD': nh / ne, 'timing MAE (d)': np.mean(te), 'median peak rel. err': np.median(pe)})

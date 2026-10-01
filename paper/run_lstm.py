@@ -2,7 +2,8 @@
 import sys, time, numpy as np, pandas as pd, torch
 from floodlab import data, features as F, models as M, lstm as L
 torch.set_num_threads(4)
-df = data.load(); T0 = pd.Timestamp('2025-09-01'); HS = L.HZ
+from floodlab.config import T0, FC_YEARS
+df = data.load(); HS = L.HZ
 NS = int(sys.argv[1]) if len(sys.argv) > 1 else 10; NSL = int(sys.argv[2]) if len(sys.argv) > 2 else 3; EP = int(sys.argv[3]) if len(sys.argv) > 3 else 60
 sites = data.site_order(df); sidmap = {s: i for i, s in enumerate(sites)}; rows = []
 def seqs_for(train_mask):
@@ -42,7 +43,7 @@ tm = (df.date < T0)
 ens('chrono', 'all', lambda d, n: d < T0, lambda d, n: d >= T0, NS, trmask=tm.values, train_cutoff=T0, keep_seed_rows=True)
 pd.concat(rows).to_csv('results/preds_lstm.csv', index=False)
 # forward chaining
-for yr in (2025, 2026):
+for yr in FC_YEARS:
     vs, ve = pd.Timestamp(f'{yr}-06-01'), min(pd.Timestamp(f'{yr}-09-30'), df.date.max()); cut = vs - pd.Timedelta(days=7)
     ens('fc', str(yr), lambda d, n, cut=cut: d < cut, lambda d, n, vs=vs, ve=ve: (d >= vs) & (d <= ve), NS, trmask=(df.date < cut).values, train_cutoff=cut)
     pd.concat(rows).to_csv('results/preds_lstm.csv', index=False)

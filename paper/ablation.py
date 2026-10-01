@@ -2,6 +2,7 @@
 import numpy as np, pandas as pd, warnings
 from floodlab import data, features as F, models as M, metrics as Mx
 warnings.filterwarnings('ignore')
+from floodlab.config import ABL_YEARS
 df = data.load(); order = data.site_order(df)
 GROUPS = {'soil (θ*, Δθ7)': ['th_star', 'th_d7'], 'antecedent rain (API, 14/30-d sums)': ['API80', 'API95', 'P_s14', 'P_s30'], 'current rain (lags 0-3, 3/7-d sums, intensity, wet spell)': ['lp', 'lp_l1', 'lp_l2', 'lp_l3', 'P_s3', 'P_s7', 'intens', 'wet_spell'],
           'temperature/humidity/snow (τ, Δτ, PDD, RH, snow frac.)': ['temperature_mean_c', 'dtemp', 'pdd7', 'snowfrac', 'relative_humidity_mean_pct'], 'season (sin/cos doy)': ['sin_doy', 'cos_doy', 'y_anom'],
@@ -9,7 +10,7 @@ GROUPS = {'soil (θ*, Δθ7)': ['th_star', 'th_d7'], 'antecedent rain (API, 14/3
 LAGS_ONLY = ['y', 'y_l1', 'y_l2', 'y_l3', 'y_l7', 'dy']
 def run(drop=None, only=None, hs=(1, 3)):
     res = []
-    for yr in (2023, 2024, 2025, 2026):
+    for yr in ABL_YEARS:
         vs, ve = pd.Timestamp(f'{yr}-06-01'), min(pd.Timestamp(f'{yr}-09-30'), df.date.max()); ex = (df.date >= vs - pd.Timedelta(days=7)) & (df.date <= ve + pd.Timedelta(days=30))
         fit = F.Fit(df, ~ex); f = F.build(df, fit); f['sid'] = M.sid(f)
         for h in hs:

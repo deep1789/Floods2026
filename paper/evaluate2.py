@@ -13,7 +13,8 @@ def md(d, fmt='{:.3f}'):
     return h + '\n'.join('| ' + ' | '.join(fm(v) for v in r) + ' |' for r in d.values) + '\n'
 w = lambda n, t: open(f'tables2/{n}.md', 'w').write(t)
 # ------------- regime descriptors from the training window (< 2025-09-01), standardised across sites
-tr = df[df.date < '2025-09-01']; rows = {}
+from floodlab.config import T0
+tr = df[df.date < T0]; rows = {}
 for s, g in tr.groupby('location'):
     q = g[Q].values; med = max(np.median(q), 1e-3); y = np.log1p(q)
     rows[s] = dict(fdc5=np.log10((np.quantile(q, .05) + .01) / med), fdc25=np.log10((np.quantile(q, .25) + .01) / med), fdc75=np.log10(np.quantile(q, .75) / med),

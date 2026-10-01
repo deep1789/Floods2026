@@ -5,3 +5,8 @@ results/preds_lstm.csv
 results/*.log
 results/extended/cache/
 results/extended/*.log
+**/results/preds_*.csv
+**/results/*.log
+**/results/progress.log
+corrected/run_all.out
+extended/panel_*.csv

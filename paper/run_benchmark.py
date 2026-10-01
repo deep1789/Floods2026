@@ -2,7 +2,8 @@
 Writes results/preds_tree.csv (long format: one row per scheme/fold/h/model/site/origin-date)."""
 import sys, time, numpy as np, pandas as pd
 from floodlab import data, features as F, models as M
-df = data.load(); T0 = pd.Timestamp('2025-09-01'); HS = (1, 3, 7); QS = (0.05, 0.25, 0.5, 0.75, 0.95); rows = []
+from floodlab.config import T0, LOMO_YEARS, FC_YEARS
+df = data.load(); HS = (1, 3, 7); QS = (0.05, 0.25, 0.5, 0.75, 0.95); rows = []
 
 def prep(train_mask):
     fit = F.Fit(df, train_mask); f = F.build(df, fit); f['sid'] = M.sid(f); return fit, f
@@ -35,7 +36,7 @@ tm = df.date < T0; fit, f = prep(tm)
 run('chrono', 'all', fit, f, lambda d: d.date_tgt < T0, lambda d: d.date >= T0)
 print('chrono done', round(time.time() - t), flush=True)
 # ---- 2. leave-one-monsoon-out with purge (target within h days before block, features 30 days after)
-for yr in (2023, 2024, 2025, 2026):
+for yr in LOMO_YEARS:
     vs, ve = pd.Timestamp(f'{yr}-06-01'), min(pd.Timestamp(f'{yr}-09-30'), df.date.max())
     for h in HS:
         pass
@@ -46,7 +47,7 @@ for yr in (2023, 2024, 2025, 2026):
         lambda d, vs=vs, ve=ve: (d.date >= vs) & (d.date <= ve), models=('B0', 'B1', 'B2', 'B3', 'HGB'))
     print('lomo', yr, round(time.time() - t), flush=True)
 # ---- 2b. forward chaining (train strictly before the held-out monsoon; comparable with the LSTM)
-for yr in (2025, 2026):
+for yr in FC_YEARS:
     vs, ve = pd.Timestamp(f'{yr}-06-01'), min(pd.Timestamp(f'{yr}-09-30'), df.date.max()); cut = vs - pd.Timedelta(days=7)
     fit, f = prep(df.date < cut)
     run('fc', str(yr), fit, f, lambda d, cut=cut: d.date_tgt < cut, lambda d, vs=vs, ve=ve: (d.date >= vs) & (d.date <= ve), models=('B0', 'B1', 'B2', 'B3', 'HGB'))

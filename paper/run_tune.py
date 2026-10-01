@@ -4,11 +4,12 @@ Criterion: median across sites of log-NSE, averaged over the folds. 30 random co
 import sys, json, time, itertools, numpy as np, pandas as pd, warnings
 from floodlab import data, features as F, models as M, metrics as Mx
 warnings.filterwarnings('ignore')
-df = data.load(); T0 = pd.Timestamp('2025-09-01'); rng = np.random.default_rng(42)
+from floodlab.config import T0, INNER_YEARS, N_CAND
+df = data.load(); rng = np.random.default_rng(42)
 SPACE = dict(learning_rate=[0.02, 0.05, 0.1], max_leaf_nodes=[7, 15, 31], min_samples_leaf=[10, 20, 50], l2_regularization=[0.0, 1.0, 10.0], max_iter=[200, 400, 600])
-cands = [M.hgb_params()] + [{k: v[rng.integers(len(v))] for k, v in SPACE.items()} | {'random_state': 0} for _ in range(30)]
+cands = [M.hgb_params()] + [{k: v[rng.integers(len(v))] for k, v in SPACE.items()} | {'random_state': 0} for _ in range(N_CAND)]
 folds = []
-for yr in (2023, 2024, 2025):
+for yr in INNER_YEARS:
     vs, ve = pd.Timestamp(f'{yr}-06-01'), pd.Timestamp(f'{yr}-09-30'); ex = (df.date >= vs - pd.Timedelta(days=7)) & (df.date <= ve + pd.Timedelta(days=30)) | (df.date >= T0)
     fit = F.Fit(df, ~ex); f = F.build(df, fit); f['sid'] = M.sid(f); folds.append((vs, ve, f))
 res = {h: np.zeros((len(cands), len(folds))) for h in (1, 3, 7)}; t = time.time()

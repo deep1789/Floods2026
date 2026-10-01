@@ -4,7 +4,8 @@ import numpy as np, pandas as pd, warnings, json
 from sklearn.ensemble import IsolationForest, HistGradientBoostingRegressor as H
 from floodlab import data, features as F, models as M, metrics as Mx
 warnings.filterwarnings('ignore')
-df = data.load(); order = data.site_order(df); T0 = pd.Timestamp('2025-09-01'); Q, P = data.Q, data.P
+from floodlab.config import T0
+df = data.load(); order = data.site_order(df); Q, P = data.Q, data.P
 def md(d, fmt='{:.3f}'):
     h = '| ' + ' | '.join(map(str, d.columns)) + ' |\n|' + '|'.join(['---'] * len(d.columns)) + '|\n'
     fm = lambda v: fmt.format(v) if isinstance(v, (float, np.floating)) and not np.isnan(v) else ('' if isinstance(v, float) else str(v))

@@ -154,9 +154,10 @@ for a, b_, lab in pairs:
 SY = pd.DataFrame(rows); SY.to_csv('results/synchrony.csv', index=False); w('synchrony', md(SY, '{:.3f}'))
 
 # ================= 4.9 recession constants (training period, chrono) =================
-fitc = F.Fit(df, df.date < '2025-09-01'); rows = []
+from floodlab.config import T0
+fitc = F.Fit(df, df.date < T0); rows = []
 for s in order:
-    g = df[(df.location == s) & (df.date < '2025-09-01')]; z = g.assign(Qn=g[Q].shift(-1), Pn=g[P].shift(-1))
+    g = df[(df.location == s) & (df.date < T0)]; z = g.assign(Qn=g[Q].shift(-1), Pn=g[P].shift(-1))
     d = z[(z[P] == 0) & (z.Pn == 0) & (z.Qn <= z[Q]) & (z[Q] > 0.5)]; n = len(d); c = float(np.median(d.Qn / d[Q])) if n else np.nan
     rows.append(dict(Location=s, dry_pairs=n, raw_median_ratio=c, used_c=fitc.c[s], kappa_days=(-1 / np.log(fitc.c[s])) if fitc.c[s] < 1 else np.inf, fallback='pooled' if n < 10 else 'site'))
 RC = pd.DataFrame(rows); RC.to_csv('results/recession.csv', index=False); w('recession', md(RC, '{:.3f}'))
