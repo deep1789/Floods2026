@@ -1,4 +1,8 @@
-"""Build the corrected + extended panel (needs network: archive-api.open-meteo.com and flood-api.open-meteo.com).
+"""RESUMING: responses already fetched are saved in extended/api_cache.tar.gz. Before running, restore them with
+    mkdir -p results/extended && tar -xzf extended/api_cache.tar.gz -C results/extended
+The script then skips every request already cached. Run it when the Open-Meteo daily quota has reset (the API answers "Daily API request limit exceeded" otherwise).
+
+Build the corrected + extended panel (needs network: archive-api.open-meteo.com and flood-api.open-meteo.com).
  - Discharge: for locations where a neighbouring GloFAS cell has >10x the mean flow of the dataset's cell (results/extended/cell_scan_summary.csv),
    use that cell ('corrected'); otherwise keep the dataset's cell. The original-cell series is kept as river_discharge_m3s_original_cell.
  - Weather and soil moisture: Open-Meteo archive (default 'best match'), 2010-01-01..2022-12-31; the dataset's V2 values are kept for 2023-01-01 onwards.
