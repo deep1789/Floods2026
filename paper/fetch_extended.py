@@ -10,14 +10,20 @@ sys.path.insert(0, os.path.dirname(__file__)); from floodlab import data
 W_API = 'https://archive-api.open-meteo.com/v1/archive'; F_API = 'https://flood-api.open-meteo.com/v1/flood'
 DAILY = 'precipitation_sum,rain_sum,temperature_2m_mean,dew_point_2m_mean,precipitation_hours,relative_humidity_2m_mean,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant'
 OUT = 'results/extended'; os.makedirs(OUT, exist_ok=True)
-def get(url, params, tries=4):
-    q = url + '?' + urllib.parse.urlencode(params)
+import hashlib
+CACHE = 'results/extended/cache'; os.makedirs(CACHE, exist_ok=True)
+def get(url, params, tries=7):
+    q = url + '?' + urllib.parse.urlencode(params); fn = f"{CACHE}/{hashlib.md5(q.encode()).hexdigest()}.json"
+    if os.path.exists(fn): return json.load(open(fn))          # resumable: every successful response is cached
     for i in range(tries):
         try:
-            with urllib.request.urlopen(q, timeout=60) as r: return json.load(r)
+            time.sleep(0.3)
+            with urllib.request.urlopen(q, timeout=90) as r: j = json.load(r)
+            if j.get('error'): raise RuntimeError(j.get('reason'))
+            json.dump(j, open(fn, 'w')); return j
         except Exception as e:
             if i == tries - 1: raise
-            time.sleep(2 ** (i + 1))
+            time.sleep(min(60, 3 * 2 ** i))
 def flood(lat, lon, a, b):
     j = get(F_API, dict(latitude=lat, longitude=lon, daily='river_discharge', start_date=a, end_date=b)); return pd.Series(j['daily']['river_discharge'], index=pd.to_datetime(j['daily']['time']))
 def scan(k=2, step=0.05):

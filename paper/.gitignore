@@ -3,3 +3,5 @@ __pycache__/
 results/preds_tree.csv
 results/preds_lstm.csv
 results/*.log
+results/extended/cache/
+results/extended/*.log
