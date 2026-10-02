@@ -8,7 +8,7 @@
 
 **Statistical conclusion validity.** Metric choice affects rankings (Section 8.4, items 4 and 5); we report both raw and log-space metrics plus event metrics. Multiple comparisons across locations, horizons and models are corrected by false-discovery-rate control within each split scheme. Hyperparameters were tuned only for boosting and the LSTM, with a bounded nested search (Section 8.5); the Transformer-style and graph networks use default settings, so conclusions about the relative merit of model families remain conditional on the search effort spent on each. The tuning of the LSTM did not transfer to the test period, which indicates that the inner validation signal is noisy.
 
-**Data limitations.** Weather values are model/reanalysis-based; precipitation in steep terrain can be strongly biased, and soil moisture is a model variable. The elevation field has a plausibility problem at Chisapani (A7). Zeros in precipitation are genuine and retained.
+**Data limitations.** Weather values are model/reanalysis-based, and change-point tests flag clustered breaks across locations that may reflect changes in the provider's model blend (Section 3.6); precipitation in steep terrain can be strongly biased, and soil moisture is a model variable. The elevation field has a plausibility problem at Chisapani (A7). Zeros in precipitation are genuine and retained.
 
 **Ethical and societal considerations.** Flood information is safety-relevant. The paper states explicitly that the models are research tools and not warning systems; that they cannot detect glacial-lake outburst, landslide-dam or avalanche-triggered floods; and that the dataset is not a substitute for DHM's official monitoring and forecasting. We avoid any presentation that could be mistaken for an operational forecast and avoid publishing a ranked "most dangerous river" list derived from modelled magnitudes. Open-Meteo, GloFAS and DHM are credited according to the licence terms. Death and displacement figures from the 2024 floods are cited only from official reports.
 
@@ -38,7 +38,8 @@
 | Metrics, DM tests with BH, block-bootstrap intervals, event and quantile scores | done | `evaluate.py` |
 | Lag weights, soil-moisture mixed model, ablation, POT/GPD, joint extremes, upstream–downstream, recession | done | `analyses.py`, `ablation.py` |
 | Grouped permutation importance, scenario analysis, isolation forest, smearing check | done | `run_extras2.py` |
-| TreeSHAP, LSTM autoencoder, wavelet coherence, profile-likelihood GPD intervals, Pettitt/CUSUM tests | **not run** | — |
+| Pettitt change-point test on weather series | done; uninterpretable p-values (autocorrelation), but break dates cluster across locations | Section 3.6, `breaks.py` |
+| TreeSHAP, LSTM autoencoder, wavelet coherence, profile-likelihood GPD intervals, CUSUM test | **not run** | — |
 | Validation of the corrected cells against DHM gauges; catchment attributes | **not done**: no gauge data available | Section 7.11 |
 | Record extension (2010–2022) with corrected discharge | **scripts written, not run**: the weather API's daily quota was exhausted; the discharge API works | `build_extended.py`, `extended/run_all.sh` |
 
@@ -52,7 +53,9 @@ python scan_from_cache.py              # summarises the scan from the cache
 python build_corrected.py              # builds corrected/panel_corrected_2023_2026.csv from the cache
 bash corrected/run_all.sh              # leakage tests, benchmark, tuning, LSTM, extra arms, analyses, evaluation (about 1 hour)
 cd corrected && FLOOD_CSV=$PWD/panel_corrected_2023_2026.csv python ../prelim.py && python ../make_tables.py
+cd corrected && FLOOD_CSV=$PWD/panel_corrected_2023_2026.csv python ../breaks.py   # Pettitt tests (Section 3.6)
 cd .. && python build_paper.py         # assembles corrected/PAPER.md
+python check_numbers.py                # cross-checks 100+ numbers quoted in the text against the result files
 ```
 
 Run the heavy scripts one at a time; they use all CPU cores and slow each other down badly if run together. The original uncorrected analysis is reproduced by the same scripts without `FLOOD_CSV`.
@@ -61,7 +64,7 @@ Run the heavy scripts one at a time; they use all CPU cores and slow each other 
 
 1. Validate or correct the replacement cells against DHM gauge discharge (or published long-term means), at least at Chisapani, Devghat, Chatara and Khokana.
 2. Extend the record when the weather API quota allows (`build_extended.py`, then `extended/run_all.sh`); about 13 more training monsoons would make leave-one-monsoon-out and the extreme-value analyses meaningful.
-3. Run the unrun items of Table 131, and re-check every number quoted in the text against the regenerated tables (the text quotes values by hand).
+3. Run the unrun items of Table 131. After any re-run, execute `check_numbers.py`, which cross-checks about 100 of the numbers quoted in the text against the result files (all matched at the time of writing); numbers not covered by it were checked by hand.
 4. Verify the references, and reformat for the target venue (a dataset-and-benchmark track is the natural fit).
 
 ### 10.3 Suggested venues

@@ -95,7 +95,14 @@ Because "Best Match" is a blend, the underlying weather model may change over ti
 
 $$U_{t} = \sum_{i=1}^{t}\sum_{j=t+1}^{n}\operatorname{sgn}(z_i - z_j), \qquad K = \max_{1\le t<n}|U_t|,$$
 
-with approximate $p$-value $p \approx 2\exp\!\big(-6K^2 / (n^3 + n^2)\big)$. A significant break in precipitation or soil moisture near a model-version date would be a red flag for temporal validation. *This test was not run in the present study.*
+with approximate $p$-value $p \approx 2\exp\!\big(-6K^2 / (n^3 + n^2)\big)$. A significant break in precipitation or soil moisture near a model-version date would be a red flag for temporal validation. We ran the Pettitt test on six seasonally adjusted weather series at each of the ten locations (60 tests; Table 132; the CUSUM test was not run).
+
+**Table 132. Pettitt change-point tests on seasonally adjusted weather series (10 locations per variable).** "Largest shift" is the largest change in the mean of the residual, in standard deviations, between the segments before and after the estimated change point.
+
+{{T:pettitt}}
+
+Almost every series is flagged: 46 of the 60 tests remain significant after a Bonferroni correction, including soil moisture at all ten locations (shifts up to 1.4 standard deviations), dew point and relative humidity at 9 and 8, and temperature at 8. **These p-values cannot be taken at face value.** The test assumes independent observations, whereas daily residuals of soil moisture, humidity and temperature are strongly autocorrelated, and with only 3.7 years a wet year followed by a dry one produces an apparent break whatever the cause. What is informative is that the estimated dates *cluster across locations*: the dew-point break falls within 6–8 May 2024 at six of ten locations, the relative-humidity break within 8–9 April 2025 at five, and the temperature break within 27–28 April 2025 at four (and on 29 March 2024 at two more), and the soil-moisture breaks fall between June 2024 and September 2025. Common dates at distant locations are what one would expect from a change in the weather-model blend, but also from a common weather regime, and we cannot distinguish the two without the provider's model-version history, which we did not have. We therefore treat the weather series as possibly non-stationary in distribution. The chronological test period (September 2025–August 2026) lies after most of the estimated breaks, so a model trained on earlier data may meet different input distributions at test time; the ablation, which shows that humidity, soil moisture and temperature contribute little (Section 8.7), limits the consequence for the forecasts reported here, but not for any analysis that uses those variables directly.
+
 
 ### 3.7 Exploratory results
 

@@ -11,3 +11,5 @@
 ## Resuming the record extension
 
 `build_extended.py` was stopped partway because the Open-Meteo daily quota was exhausted (2 of 10 locations done). The fetched responses are in `extended/api_cache.tar.gz`; the header of `build_extended.py` explains how to restore them and continue. After it writes `extended/panel_2010_2026.csv`, run `bash extended/run_all.sh` (about 1-2 hours) and then adapt `build_paper.py` to the new tables.
+
+`breaks.py` runs the Pettitt tests; `check_numbers.py` cross-checks numbers quoted in `corrected/PAPER.md` against the result files.
