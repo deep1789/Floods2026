@@ -1,0 +1,13 @@
+Event,Location,Date,Role,Model,max_z_pm1d,percentile,n_oof
+Sep-2024 storm,Kusum,2024-09-28,rain-driven flood (positive),B3_ARX,3.8084126312927085,98.6870897155361,457
+Sep-2024 storm,Kusum,2024-09-28,rain-driven flood (positive),HGB,3.8991757031292402,98.6870897155361,457
+Sep-2024 storm,Khokana,2024-09-28,rain-driven flood (positive),B3_ARX,4.401834382403194,99.78118161925602,457
+Sep-2024 storm,Khokana,2024-09-28,rain-driven flood (positive),HGB,4.430607895348521,99.78118161925602,457
+Sep-2024 storm,Devghat,2024-09-29,rain-driven flood (positive),B3_ARX,8.64845721977949,99.78118161925602,457
+Sep-2024 storm,Devghat,2024-09-29,rain-driven flood (positive),HGB,6.8234931173281135,99.78118161925602,457
+Thame GLOF,Chatara,2024-08-16,"GLOF, nearest location (negative control)",B3_ARX,0.3630438226962929,83.36980306345733,457
+Thame GLOF,Chatara,2024-08-16,"GLOF, nearest location (negative control)",HGB,-0.0163527730007233,65.20787746170679,457
+Thame GLOF,Bahrabise,2024-08-16,"GLOF, nearest Koshi site (negative control)",B3_ARX,-0.004468901475041738,61.925601750547045,457
+Thame GLOF,Bahrabise,2024-08-16,"GLOF, nearest Koshi site (negative control)",HGB,0.45334104905117606,82.27571115973743,457
+Bhote Koshi flash flood,Rasuwagadhi,2025-07-08,flash flood (negative control),B3_ARX,1.1999870967309505,92.5601750547046,457
+Bhote Koshi flash flood,Rasuwagadhi,2025-07-08,flash flood (negative control),HGB,1.152316583269142,92.34135667396062,457
