@@ -136,10 +136,12 @@ percentile), while the August 2024 glacial-lake outburst and the July
 <p><strong>Limits.</strong> The target remains modelled and partly
 circular with the weather inputs, the record covers about 4.7 monsoons,
 and neither the corrected cells nor the model skill have been validated
-against gauge data. We argue that the main contributions are the audited
-and corrected panel, a leakage-tested benchmark in which model
-complexity buys little over persistence, and an explicit account of what
-daily modelled data cannot show.</p>
+against gauge data (the corrections passed only internal plausibility
+checks, such as the catchment area implied by the mean flow). We argue
+that the main contributions are the audited and corrected panel, a
+leakage-tested benchmark in which model complexity buys little over
+persistence, and an explicit account of what daily modelled data cannot
+show.</p>
 <p><strong>Keywords:</strong> Nepal; flood forecasting; GloFAS;
 Open-Meteo; data audit; soil moisture; river discharge; machine
 learning; extreme value theory; transboundary hydrology.</p>
@@ -156,7 +158,7 @@ bulk of monsoon runoff. Between June and September, the South Asian
 monsoon delivers most of the year’s precipitation to these catchments.
 In the ten-location panel analysed here, between 62 % and 89 % of
 precipitation falls in June–September, depending on the location (Table
-4).</p>
+5).</p>
 <p>The consequences are well known: floods, landslides and debris flows
 each year, with periodic extreme years. The late-September 2024 event,
 in which the Department of Hydrology and Meteorology (DHM) reported new
@@ -861,12 +863,164 @@ Chisapani) and Bahrabise, Rasuwagadhi and Bhada Bridge look like smooth
 monsoon hydrographs. Where we quote results for the corrected panel they
 describe the <em>corrected modelled series</em>, not the gauged
 river.</p>
+<p><em>A plausibility check that needs no gauge data.</em> A river’s
+mean flow cannot exceed the water that falls on its catchment, so mean
+discharge
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>Q</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar Q</annotation></semantics></math>,
+mean annual precipitation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>P</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar P</annotation></semantics></math>
+at the coordinate and a runoff coefficient
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
+imply a catchment area
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>=</mo><mover><mi>Q</mi><mo accent="true">‾</mo></mover><mo>⋅</mo><mo stretchy="false" form="prefix">(</mo><mn>3.156</mn><mo>×</mo><msup><mn>10</mn><mn>7</mn></msup><mspace width="0.167em"></mspace><mi mathvariant="normal">s</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mover><mi>P</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">A=\bar Q\cdot(3.156\times10^{7}\,\mathrm{s})/(\bar P\,c)</annotation></semantics></math>.
+With
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">c=0.5</annotation></semantics></math>
+(range 0.3–0.7), the V2 series imply catchments of only 31 km² for the
+Karnali at Chisapani, 59 km² for the Saptakoshi at Chatara and 107 km²
+for the Narayani at Devghat, which is impossible for rivers that drain
+tens of thousands of square kilometres (Table 4). The corrected series
+imply about 48,000, 73,000 and 74,000 km², the right order of magnitude;
+they are, if anything, larger than we would expect for these basins (by
+a factor of roughly 1–2, which the unrepresentative point precipitation,
+snow and groundwater contributions and the choice of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
+can easily account for). The check is weak (it fixes the order of
+magnitude, not the value) and it also flags two corrected cells:
+Rasuwagadhi implies about 5,500 km², more than we would expect for the
+Bhote Koshi at the border crossing, so its replacement cell may lie
+downstream on the Trishuli, and Khokana implies about 1,250 km², larger
+than we would expect for the Bagmati at Khokana. The nesting is
+consistent: the corrected mean flow at Rasuwagadhi (133 m³/s) is far
+below that at Devghat (1,609 m³/s), which it feeds, and Bahrabise (84
+m³/s) is far below Chatara (1,829 m³/s). <em>We therefore regard the
+three large-river corrections as plausible, Bhada Bridge and Bahrabise
+as plausible, and Khokana and Rasuwagadhi as uncertain; none is
+validated against gauges.</em></p>
+<p><strong>Table 4. Catchment area implied by mean discharge, local
+precipitation and a runoff coefficient of 0.5.</strong> The V2 areas for
+the three large rivers are physically impossible; the corrected areas
+have the right order of magnitude. Areas for the smaller rivers are
+indicative only.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr>
+<th>Location</th>
+<th>Annual precipitation at coordinate (mm)</th>
+<th>V2 mean Q (m³/s)</th>
+<th>V2 implied area (km²)</th>
+<th>Corrected mean Q (m³/s)</th>
+<th>Corrected implied area (km²)</th>
+<th>Range for c = 0.7–0.3 (km²)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Devghat</td>
+<td>1,373</td>
+<td>2</td>
+<td>107</td>
+<td>1,609</td>
+<td>73,972</td>
+<td>52,837–123,286</td>
+</tr>
+<tr>
+<td>Chatara</td>
+<td>1,583</td>
+<td>2</td>
+<td>59</td>
+<td>1,829</td>
+<td>72,909</td>
+<td>52,078–121,516</td>
+</tr>
+<tr>
+<td>Chisapani</td>
+<td>1,746</td>
+<td>1</td>
+<td>31</td>
+<td>1,325</td>
+<td>47,905</td>
+<td>34,218–79,842</td>
+</tr>
+<tr>
+<td>Kusum</td>
+<td>1,122</td>
+<td>126</td>
+<td>7,075</td>
+<td>126</td>
+<td>7,075</td>
+<td>5,054–11,792</td>
+</tr>
+<tr>
+<td>Rasuwagadhi</td>
+<td>1,521</td>
+<td>1</td>
+<td>58</td>
+<td>133</td>
+<td>5,513</td>
+<td>3,938–9,188</td>
+</tr>
+<tr>
+<td>Bhada Bridge</td>
+<td>1,464</td>
+<td>1</td>
+<td>30</td>
+<td>65</td>
+<td>2,820</td>
+<td>2,014–4,700</td>
+</tr>
+<tr>
+<td>Bahrabise</td>
+<td>1,899</td>
+<td>5</td>
+<td>168</td>
+<td>84</td>
+<td>2,795</td>
+<td>1,997–4,659</td>
+</tr>
+<tr>
+<td>Belsot</td>
+<td>1,331</td>
+<td>33</td>
+<td>1,567</td>
+<td>33</td>
+<td>1,567</td>
+<td>1,119–2,611</td>
+</tr>
+<tr>
+<td>Khokana</td>
+<td>2,472</td>
+<td>2</td>
+<td>42</td>
+<td>49</td>
+<td>1,250</td>
+<td>893–2,083</td>
+</tr>
+<tr>
+<td>Chameliya/Nayalbadi</td>
+<td>1,854</td>
+<td>31</td>
+<td>1,069</td>
+<td>31</td>
+<td>1,069</td>
+<td>763–1,781</td>
+</tr>
+</tbody>
+</table>
 <p><strong>A5 — Quantisation and repeated values (consequence of
 A4).</strong> In the V2 series, 64 % of Bhada Bridge days and 51 % of
 Chisapani days had discharge identical to the previous day, because
 flows were so small that they were rounded at the second decimal. In the
 corrected series the repeated-value fraction is 2–13 % at every location
-(Table 5).</p>
+(Table 6).</p>
 <p><strong>A6 — Intermittent zero flow (consequence of A4).</strong> The
 V2 series had 223 days of exactly zero discharge at Khokana (16.7 % of
 the record). The corrected series has none (its 5th percentile is 0.1
@@ -885,7 +1039,7 @@ August 2026 and contains the 2026 monsoon through that date. The
 documentation mentions a 2026 flood in the Rasuwa and Bhote
 Koshi–Trishuli corridor without giving its date, so it cannot be tested
 directly (Section 8.8).</p>
-<p><strong>Table 4. Seasonality and tail diagnostics per location
+<p><strong>Table 5. Seasonality and tail diagnostics per location
 (June–September = monsoon), corrected discharge.</strong></p>
 <table style="width:100%;">
 <colgroup>
@@ -1001,7 +1155,7 @@ directly (Section 8.8).</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 5. Data-quality diagnostics per location, corrected
+<p><strong>Table 6. Data-quality diagnostics per location, corrected
 discharge.</strong> “Zero P days” are genuine dry days, retained by
 design. “Repeated Q” is the fraction of days where discharge is
 identical to the previous day.</p>
@@ -1158,8 +1312,8 @@ the Pettitt statistic is</p>
 A significant break in precipitation or soil moisture near a
 model-version date would be a red flag for temporal validation. We ran
 the Pettitt test on six seasonally adjusted weather series at each of
-the ten locations (60 tests; Table 6; the CUSUM test was not run).</p>
-<p><strong>Table 6. Pettitt change-point tests on seasonally adjusted
+the ten locations (60 tests; Table 7; the CUSUM test was not run).</p>
+<p><strong>Table 7. Pettitt change-point tests on seasonally adjusted
 weather series (10 locations per variable).</strong> “Largest shift” is
 the largest change in the mean of the residual, in standard deviations,
 between the segments before and after the estimated change point.</p>
@@ -1488,7 +1642,7 @@ labelling choice. A single headline accuracy under one arbitrary
 threshold is not a scientific result.</p>
 <h3 id="a-worked-example-khokana-24-september-2-october-2024">4.8 A
 worked example: Khokana, 24 September – 2 October 2024</h3>
-<p>To make the formulation concrete, Table 7 shows the quantities
+<p>To make the formulation concrete, Table 8 shows the quantities
 defined above for the most responsive location during the late-September
 2024 storm, from the corrected series. The antecedent index uses a
 recession constant
@@ -1496,7 +1650,7 @@ recession constant
 chosen for illustration (the study estimates
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
 per site).</p>
-<p><strong>Table 7. Khokana during the 2024 storm (corrected
+<p><strong>Table 8. Khokana during the 2024 storm (corrected
 discharge).</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>Q</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">y=\log(1+Q)</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">\Delta y</annotation></semantics></math>
@@ -1663,7 +1817,7 @@ day.</li>
 with no rainfall and a falling hydrograph. Applying the filter
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>t</mi></msub><mo>=</mo><msub><mi>P</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>0</mn><mo>,</mo><mspace width="0.222em"></mspace><msub><mi>Q</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>≤</mo><msub><mi>Q</mi><mi>t</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><msub><mi>Q</mi><mi>t</mi></msub><mo>&gt;</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">P_t=P_{t+1}=0,\ Q_{t+1}\le Q_t,\ Q_t&gt;0.5</annotation></semantics></math>
 m³/s on the training period gives 103 to 479 qualifying pairs at every
-location of the corrected panel (Table 8), so a per-site constant is
+location of the corrected panel (Table 9), so a per-site constant is
 identifiable everywhere. The median day-to-day ratios are 0.968–0.997 at
 nine locations, i.e. storage constants of 31 to 320 days, which describe
 slowly receding baseflow, and 0.772 at Khokana, i.e. about 4 days,
@@ -1671,7 +1825,7 @@ consistent with its flashy response. (In the V2 series, the same filter
 gave only 3 to 37 pairs at five locations and a degenerate ratio of
 exactly 1.0 at Devghat, because the plateaued values made the diagnostic
 uninformative; the correction removes this problem.)</p>
-<p><strong>Table 8. Recession constants estimated on the training period
+<p><strong>Table 9. Recession constants estimated on the training period
 (corrected discharge).</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>κ</mi><mo>=</mo><mi>−</mi><mn>1</mn><mi>/</mi><mrow><mi mathvariant="normal">ln</mi><mo>⁡</mo></mrow><mi>c</mi></mrow><annotation encoding="application/x-tex">\kappa=-1/\ln c</annotation></semantics></math>
 is the implied storage constant in days.</p>
@@ -1972,7 +2126,7 @@ Romano, 1994) is used because daily errors are strongly autocorrelated,
 so independent resampling would give intervals that are too narrow.</p>
 <h3 id="hyperparameters-computation-and-reproducibility-budget">5.7
 Hyperparameters, computation and reproducibility budget</h3>
-<p><strong>Table 9. Intended model configurations.</strong> Search
+<p><strong>Table 10. Intended model configurations.</strong> Search
 ranges are deliberately narrow; effective sample size is small (Section
 6.4). <em>Boosting and the LSTM were tuned in a nested, bounded search
 (Section 8.5); the ridge model has built-in selection; TFT-lite and the
@@ -2247,7 +2401,7 @@ the stationary bootstrap (Algorithm 4).</p>
 <p><strong>Why it is feasible.</strong> The lag structure is
 identifiable from daily data at sites with response times of a few days,
 and the monsoon provides a large range of rain events.
-<strong>Caveat.</strong> Raw cross-correlations (Table 13) mix response
+<strong>Caveat.</strong> Raw cross-correlations (Table 14) mix response
 with seasonality and must not be reported as lags. For example,
 correlations at several sites keep rising up to the maximum lag examined
 (7 days), which reflects the shared seasonal cycle and not a 7-day
@@ -2393,14 +2547,14 @@ cannot be measured</em>. What can be done is to characterise the
 modelled discharge at the most downstream locations (Chatara on the
 Saptakoshi and Devghat on the Narayani, which become the Koshi and
 Gandak systems in India). In the September 2024 event, the peak at these
-locations followed the precipitation peak by 2 days at both (Table 12).
+locations followed the precipitation peak by 2 days at both (Table 13).
 We report this as a <em>characteristic timescale in the model</em>, not
 as an operational warning time, and flag that real routing, attenuation
 by structures, and observed flows could differ.</p>
 <h3 id="summary-of-feasibility">7.10 Summary of feasibility</h3>
 <p>The implementation status of each analysis is listed in Section
 10.1.</p>
-<p><strong>Table 10. Analyses by evidential strength.</strong></p>
+<p><strong>Table 11. Analyses by evidential strength.</strong></p>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -2536,7 +2690,7 @@ experiment; 8.7 reports the process analyses; 8.8 the documented events;
 discussion.</p>
 <h3 id="annual-maxima-and-the-september-2024-storm">8.1 Annual maxima
 and the September 2024 storm</h3>
-<p><strong>Table 11. Annual maximum modelled discharge (m³/s), corrected
+<p><strong>Table 12. Annual maximum modelled discharge (m³/s), corrected
 series.</strong> 2026 includes data only to 31 August.</p>
 <table>
 <thead>
@@ -2630,7 +2784,7 @@ and Chisapani it falls earlier, on 7 and 8 July 2024, so the September
 storm was not the largest event everywhere. At Chameliya/Nayalbadi only
 7.2 mm fell over 26–28 September, because far-western Nepal lay outside
 the storm’s footprint.</p>
-<p><strong>Table 12. The 27–29 September 2024 storm (positive
+<p><strong>Table 13. The 27–29 September 2024 storm (positive
 control).</strong> “Pre-event Q” is the median of 15–24 September; the
 peak is the maximum over 20 September–8 October; the lag is from the
 largest precipitation day (24–30 September) to the peak discharge
@@ -2789,7 +2943,7 @@ structure motivates the leave-one-location-out experiment and block
 bootstraps that respect dependence.</p>
 <h3 id="rainfalldischarge-association">8.3 Rainfall–discharge
 association</h3>
-<p><strong>Table 13. Correlation between
+<p><strong>Table 14. Correlation between
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><msub><mi>P</mi><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log(1+P_t)</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><msub><mi>Q</mi><mrow><mi>t</mi><mo>+</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log(1+Q_{t+k})</annotation></semantics></math>
@@ -2949,7 +3103,7 @@ chronological leave-one-location-out (LOLO). Statistical comparisons use
 the Diebold–Mariano test with a Newey–West variance on squared log-space
 errors, Benjamini–Hochberg control within each split scheme, and the
 paired stationary bootstrap (Algorithm 4).</p>
-<p><strong>Table 14. Median across the ten locations of NSE (raw
+<p><strong>Table 15. Median across the ten locations of NSE (raw
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>)
 and log-NSE
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>Q</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log(1+Q)</annotation></semantics></math>)
@@ -3516,7 +3670,7 @@ sequence models were not run under LOMO (blank cells).</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 15. Number of locations (of 10) at which a model beats
+<p><strong>Table 16. Number of locations (of 10) at which a model beats
 persistence in log-space MSE, and how many of those differences are
 significant after BH correction.</strong> “Sig.” means
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>&lt;</mo><mn>0.05</mn></mrow><annotation encoding="application/x-tex">q&lt;0.05</annotation></semantics></math>
@@ -3789,7 +3943,7 @@ seven; the corresponding values for persistence are 0.996, 0.981 and
 more than log-NSE does.</li>
 <li><strong>Most models beat persistence at most locations but rarely
 significantly.</strong> On the chronological split every model beats
-persistence at 7–10 of 10 locations (Table 15). The differences are
+persistence at 7–10 of 10 locations (Table 16). The differences are
 significant at one location at one day for most learned models (three
 for the ridge model and the learned-adjacency graph), and at between 0
 and 5 locations at seven days (the learned-adjacency graph is highest
@@ -3813,7 +3967,7 @@ reported.</li>
 scheme.</strong> Under LOMO the largest gains over persistence at seven
 days occur for the 2024 monsoon (boosting log-NSE 0.812 against 0.606)
 and 2025 (0.745 against 0.591); in 2026 the gain is small (0.833 against
-0.802). Under forward chaining (Table 14, “Forward chaining” rows) the
+0.802). Under forward chaining (Table 15, “Forward chaining” rows) the
 default boosting and LSTM models are below persistence in raw NSE at
 seven days (0.517 and 0.512 against 0.621), while TFT-lite (0.724) and
 the learned-adjacency graph (0.708) are above it.</li>
@@ -3824,7 +3978,7 @@ deviation 0.011), so single seeds fall both below and above persistence
 (0.944); the ten-seed ensemble (0.964) is better than the typical seed.
 At three days the range is 0.971–0.987 (persistence 0.981).</li>
 </ol>
-<p><strong>Table 16. Seed variability of the LSTM (median log-NSE across
+<p><strong>Table 17. Seed variability of the LSTM (median log-NSE across
 locations, chronological split).</strong></p>
 <table>
 <thead>
@@ -3864,7 +4018,7 @@ locations, chronological split).</strong></p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 17. Median log-NSE across locations for each held-out
+<p><strong>Table 18. Median log-NSE across locations for each held-out
 monsoon (LOMO for the baselines, ridge and boosting; forward chaining
 for the sequence models).</strong> Blank cells are folds for which the
 model was not run.</p>
@@ -4078,7 +4232,7 @@ disagreement between models: at seven days the ridge model’s NSE is only
 persistence, while its log-NSE is higher than persistence’s at both. A
 model can therefore lose at the peaks while winning on the baseflow, and
 reporting a single number would hide this.</p>
-<p><strong>Table 18. Per-location NSE and log-NSE at
+<p><strong>Table 19. Per-location NSE and log-NSE at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">h=3</annotation></semantics></math>,
 chronological split.</strong></p>
 <table style="width:100%;">
@@ -4230,7 +4384,7 @@ chronological split.</strong></p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 19. Per-location NSE and log-NSE at
+<p><strong>Table 20. Per-location NSE and log-NSE at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mn>7</mn></mrow><annotation encoding="application/x-tex">h=7</annotation></semantics></math>,
 chronological split.</strong></p>
 <table style="width:100%;">
@@ -4398,7 +4552,7 @@ of 0.295 against 0.364. Timing errors are 0.9–1.3 days at one day for
 the ridge, LSTM, TFT-lite and graph models but 2.6–2.7 days for
 boosting, whose forecast peaks therefore lag. With 27 events these
 differences are not statistically resolvable.</p>
-<p><strong>Table 20. Event-based scores, chronological split (threshold
+<p><strong>Table 21. Event-based scores, chronological split (threshold
 = training-period 95th percentile).</strong></p>
 <table style="width:100%;">
 <colgroup>
@@ -4614,7 +4768,7 @@ slightly below nominal, and 0.847 and 0.815 on days above the training
 flows, unlike in the uncorrected series. The approximate CRPS is 0.036
 (one day) and 0.076 (three days) in log units. Coverage by location
 ranges from 0.83 to 0.92 at one day and from 0.78 to 0.90 at three.</p>
-<p><strong>Table 21. Quantile forecast evaluation (chronological
+<p><strong>Table 22. Quantile forecast evaluation (chronological
 split).</strong></p>
 <table>
 <colgroup>
@@ -4735,7 +4889,7 @@ forward chaining; the learned adjacency is +0.018 at seven days in
 forward chaining (9 of 10 locations) and about zero on the chronological
 split. With only four of ten locations connected by the physical graph,
 we do not expect a large effect, and the data do not show one.</p>
-<p><strong>Table 22. Paired comparisons of model arms: median difference
+<p><strong>Table 23. Paired comparisons of model arms: median difference
 in site-level log-NSE and the number of locations where the first model
 is better.</strong></p>
 <table>
@@ -5087,7 +5241,7 @@ is better.</strong></p>
 </tr>
 </tbody>
 </table>
-<p>The event-based scores (Table 20) and Table 15 show the same plateau:
+<p>The event-based scores (Table 21) and Table 16 show the same plateau:
 all learned models are within a narrow band, each is better than
 persistence at most locations, and few of the differences are
 statistically distinguishable from persistence.</p>
@@ -5100,10 +5254,10 @@ model still receives the held-out location’s own recent discharge as an
 input. It tests whether the learned rainfall-to-increment mapping
 transfers across locations, which is a weaker claim than the
 ungauged-basin test of Kratzert et al. (2019).</p>
-<p><strong>Table 23. LOLO results at
+<p><strong>Table 24. LOLO results at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">h=1</annotation></semantics></math>
 (log-NSE), with the within-site pooled boosted model as the reference
-and the regime distance of Table 25.</strong></p>
+and the regime distance of Table 26.</strong></p>
 <table style="width:100%;">
 <colgroup>
 <col style="width: 14%" />
@@ -5227,7 +5381,7 @@ and the regime distance of Table 25.</strong></p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 24. LOLO results at
+<p><strong>Table 25. LOLO results at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">h=3</annotation></semantics></math>
 (log-NSE).</strong></p>
 <table style="width:100%;">
@@ -5361,7 +5515,7 @@ flow-duration-curve quantiles of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>Q</mi><mi>/</mi><mover><mi>Q</mi><mo accent="true">̃</mo></mover><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log_{10}(Q/\tilde Q)</annotation></semantics></math>,
 the monsoon share of precipitation, the lag-1 autocorrelation of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>Q</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log(1+Q)</annotation></semantics></math>
-and the standard deviation of daily log-increments; Table 25) singles
+and the standard deviation of daily log-increments; Table 26) singles
 out Khokana (6.19), then Rasuwagadhi (4.02) and Bhada Bridge (3.51); the
 others lie between 2.3 and 3.2. The rank correlation between regime
 distance and the LOLO loss is negative in three of four cases and not
@@ -5380,7 +5534,7 @@ at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">h=3</annotation></semantics></math>),
 so the data cannot establish that more distinctive locations transfer
 worse.</p>
-<p><strong>Table 25. Regime descriptors used for the distance (training
+<p><strong>Table 26. Regime descriptors used for the distance (training
 period).</strong>
 fdc<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mn>10</mn></msub><annotation encoding="application/x-tex">\log_{10}</annotation></semantics></math>
@@ -5525,7 +5679,7 @@ divided by the median.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 26. Rank correlation between regime distance and the
+<p><strong>Table 27. Rank correlation between regime distance and the
 change in log-NSE under LOLO.</strong></p>
 <table>
 <thead>
@@ -5592,7 +5746,7 @@ training locations include the same dates as the held-out location, so
 concurrent storms are in the training data, and it should be read as
 spatial transfer under shared weather rather than out-of-sample
 prediction.</p>
-<p><strong>Table 27. LOLO over the full period (median across held-out
+<p><strong>Table 28. LOLO over the full period (median across held-out
 locations).</strong></p>
 <table style="width:100%;">
 <colgroup>
@@ -5645,7 +5799,7 @@ locations).</strong></p>
 prewhitening (regressing the daily log-increment on the current and ten
 lagged log-rainfalls, an error-correction term and seasonal harmonics,
 with a second-difference smoothness penalty chosen by blocked
-cross-validation), the modelled response is fast everywhere (Table 28,
+cross-validation), the modelled response is fast everywhere (Table 29,
 Figure 11). The peak weight falls at lag 1 day at seven locations, at
 lag 2 days at Belsot and Chameliya/Nayalbadi and at lag 0 at Bhada
 Bridge. The centroid of the positive weights is shortest at Rasuwagadhi
@@ -5657,7 +5811,7 @@ large rivers have centroids of 1.8–2.0 days with narrow intervals,
 whereas the uncorrected tributary cells gave 2.6–2.8 days. The intervals
 of the slower locations overlap (Belsot 2.50, Bahrabise 2.78, Kusum
 2.85, Chameliya/Nayalbadi 3.33), so the data do <strong>not</strong>
-resolve an ordering among them. The raw correlations of Table 13, which
+resolve an ordering among them. The raw correlations of Table 14, which
 kept rising out to seven days, therefore overstate the response time
 because of the common seasonal cycle. The cumulative response
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>j</mi></msub><msub><mi>w</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">\sum_j w_j</annotation></semantics></math>
@@ -5669,7 +5823,7 @@ model. We had expected high-elevation locations to respond more slowly,
 and the weights show the opposite for Rasuwagadhi; we flag this as
 unexplained and as a reason to treat the modelled response as a property
 of the model cell.</p>
-<p><strong>Table 28. Distributed-lag summary (prewhitened).</strong>
+<p><strong>Table 29. Distributed-lag summary (prewhitened).</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
 is the smoothness penalty selected by blocked cross-validation;
 intervals are 2.5–97.5 % from 200 stationary-bootstrap replicates.</p>
@@ -5847,7 +6001,7 @@ for a given event rainfall, a wetter antecedent period is associated
 with a smaller relative rise, which is the opposite of the wet-catchment
 amplification hypothesis and may reflect that wet periods have higher
 baseflow. The forecasting ablation agrees with the null on soil moisture
-(Table 30): dropping the soil-moisture features from the pooled boosted
+(Table 31): dropping the soil-moisture features from the pooled boosted
 model under LOMO changes the median log-NSE by 0.000 at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">h=1</annotation></semantics></math>
 and −0.003 at
@@ -5857,14 +6011,14 @@ season terms 0.000 and 0.029, the temperature, humidity and snow group
 0.000 and 0.014, and using flow lags alone costs 0.003 and 0.020.
 Dropping the antecedent-rain features <em>improves</em> the three-day
 score slightly (+0.004). Grouped permutation importance on the
-chronological test window gives the same ordering (Table 31): flow lags
+chronological test window gives the same ordering (Table 32): flow lags
 dominate at every horizon (106 %, 99 % and 113 % increase in MSE when
 permuted), current rain matters at one day (92 %) but not beyond (21 %
 at three days, 2 % at seven), the temperature, humidity and snow group
 matters at one and three days (21 % and 11 %), site and elevation at one
 day (23 %), season at longer horizons (14–15 %), and soil moisture (1.2
 %, −2.0 %, −1.6 %) is indistinguishable from zero. TreeSHAP on a
-LightGBM model with the same features (Table 32) gives a similar
+LightGBM model with the same features (Table 33) gives a similar
 ordering: flow lags 42 %, 38 % and 42 % of the mean absolute SHAP value
 at 1, 3 and 7 days, current rain 26 %, 21 % and 9 %, season 9 %, 17 %
 and 24 %, temperature, humidity and snow 11 %, 12 % and 8 %. It assigns
@@ -5879,7 +6033,7 @@ unimportant in real catchments; they show that, in this
 <em>modelled</em> system and at daily resolution, the soil-moisture
 variable adds nothing detectable beyond the rainfall and flow
 histories.</p>
-<p><strong>Table 29. Mixed-effects model of event
+<p><strong>Table 30. Mixed-effects model of event
 amplification.</strong></p>
 <table>
 <colgroup>
@@ -5951,7 +6105,7 @@ shuffles)</strong></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 30. Feature-group ablation, LOMO, pooled boosted model
+<p><strong>Table 31. Feature-group ablation, LOMO, pooled boosted model
 (median across locations).</strong></p>
 <table style="width:100%;">
 <colgroup>
@@ -6049,7 +6203,7 @@ shuffles)</strong></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 31. Grouped permutation importance (percentage increase
+<p><strong>Table 32. Grouped permutation importance (percentage increase
 in test MSE of the increment when the group is permuted within the test
 window).</strong></p>
 <table>
@@ -6112,7 +6266,7 @@ window).</strong></p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 32. Grouped TreeSHAP importance of a LightGBM model
+<p><strong>Table 33. Grouped TreeSHAP importance of a LightGBM model
 with the same features (share of the mean absolute SHAP value,
 chronological test window).</strong></p>
 <table>
@@ -6186,12 +6340,12 @@ daily-precipitation shape estimates between
 (Bahrabise) and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.47</mn></mrow><annotation encoding="application/x-tex">+0.47</annotation></semantics></math>
 (Bhada Bridge), and <strong>every 95 % bootstrap interval contains
-zero</strong>, with 30–43 peaks per location (Table 33; precipitation is
+zero</strong>, with 30–43 peaks per location (Table 34; precipitation is
 unaffected by the discharge correction). Profile-likelihood intervals,
 which are better behaved than the bootstrap for samples this small, are
 narrower and exclude zero at four locations (Bhada Bridge 0.13 to 1.10,
 Belsot 0.10 to 1.03, Khokana 0.01 to 1.09 and Chisapani 0.06 to 0.71;
-Table 35), so the evidence for a heavy precipitation tail depends on the
+Table 36), so the evidence for a heavy precipitation tail depends on the
 interval method and is suggestive at those four locations only. The
 September 2024 daily maximum is above the fitted threshold at nine of
 ten locations (Chameliya/Nayalbadi is the exception, 10.4 mm). The
@@ -6207,7 +6361,7 @@ makes a 165 mm day unremarkable; Devghat’s negative shape,
 makes a 140 mm day extreme), so we read them only as a consistency check
 that identifies Devghat, Rasuwagadhi and Bahrabise as the locations
 where the storm was most unusual relative to the rest of the record. For
-normalised corrected discharge (Table 34) only 8–28 declustered peaks
+normalised corrected discharge (Table 35) only 8–28 declustered peaks
 are available per location, Belsot and Rasuwagadhi have too few to fit,
 every bootstrap shape interval contains zero (for example −2.33 to 0.73
 at Chatara), while profile-likelihood intervals reach the edge of the
@@ -6220,7 +6374,7 @@ Bridge, Kusum). At Chatara the peak exceeds the finite upper end of the
 fitted bounded tail, and at Chameliya/Nayalbadi and Chisapani it is
 below the threshold, so no return period applies. We do not report
 design return levels.</p>
-<p><strong>Table 33. GPD fits for daily precipitation (event window
+<p><strong>Table 34. GPD fits for daily precipitation (event window
 excluded), 95 % bootstrap intervals for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ξ</mi><annotation encoding="application/x-tex">\xi</annotation></semantics></math>.</strong></p>
 <table>
@@ -6349,7 +6503,7 @@ excluded), 95 % bootstrap intervals for
 </tr>
 </tbody>
 </table>
-<p><strong>Table 34. GPD fits for discharge normalised by the location
+<p><strong>Table 35. GPD fits for discharge normalised by the location
 median (corrected series).</strong></p>
 <table>
 <colgroup>
@@ -6457,7 +6611,7 @@ median (corrected series).</strong></p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 35. Profile-likelihood 95 % intervals for the GPD
+<p><strong>Table 36. Profile-likelihood 95 % intervals for the GPD
 shape, compared with the bootstrap intervals (event window
 excluded).</strong> “Interval hits grid edge” means the profile interval
 reaches the limit of the ±1.5 search range and is therefore
@@ -6720,7 +6874,7 @@ ten locations are simultaneously above on 9 August 2024. By this measure
 the 6 July 2024 rainfall was spatially wider than the 27 September 2024
 storm day (all ten locations against nine), although the latter was far
 more intense where it fell.</p>
-<p><strong>Table 36. Joint-extreme summary (corrected
+<p><strong>Table 37. Joint-extreme summary (corrected
 series).</strong></p>
 <table style="width:100%;">
 <colgroup>
@@ -6775,7 +6929,7 @@ for precipitation (left) and discharge (right).</em></p>
 <p><strong>Upstream–downstream relations (Section 7.7).</strong> After
 removing the local rainfall response and the autoregressive term from
 each series, the residual cross-correlations between an upstream and a
-downstream location are clearly above those of control pairs (Table 37):
+downstream location are clearly above those of control pairs (Table 38):
 0.52 at lag 0 for Rasuwagadhi → Devghat (bootstrap interval 0.42–0.62;
 0.30 at lag 1) and 0.52 for Bahrabise → Chatara (0.35–0.65; 0.14 at lag
 1), against 0.12 (Rasuwagadhi → Kusum) and 0.11 (Bahrabise → Chisapani;
@@ -6788,7 +6942,7 @@ reaching 0.02), indistinguishable from controls. The coupling is at lag
 zero, which at daily resolution indicates a travel time shorter than a
 day (or unobserved shared rainfall), so this finding is a statement
 about co-movement and not about a measurable propagation delay.</p>
-<p><strong>Table 37. Residual cross-correlation (upstream at time
+<p><strong>Table 38. Residual cross-correlation (upstream at time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 with downstream at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>+</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">t+k</annotation></semantics></math>)
@@ -6877,11 +7031,11 @@ after partialling out local rainfall.</strong></p>
 </tr>
 </tbody>
 </table>
-<p><strong>Recession constants.</strong> Table 8 gives the
+<p><strong>Recession constants.</strong> Table 9 gives the
 training-period master-recession constants of the corrected series; the
 recession-persistence baseline B1 is close to persistence (identical
 medians at one day), and its significant advantage at eight locations at
-one day under the chronological split (Table 15) arises from small gains
+one day under the chronological split (Table 16) arises from small gains
 at many locations.</p>
 <h3 id="documented-events-as-positive-and-negative-controls">8.8
 Documented events as positive and negative controls</h3>
@@ -6905,7 +7059,7 @@ therefore cannot test that event.</p>
 <p><strong>Residual check.</strong> We computed standardised
 one-day-ahead forecast residuals out of fold (LOMO, monsoon months only,
 per-location standardisation) and ranked the residual in a ±1-day window
-around each event (Table 38). The rain-driven storm produces some of the
+around each event (Table 39). The rain-driven storm produces some of the
 largest residuals in the record (standardised residual 3.8–4.2 for
 Kusum, 2.4–3.3 for Khokana and 6.1–6.9 for Devghat, at or above the
 98.0th percentile of the monsoon out-of-fold residuals), while the three
@@ -6918,7 +7072,7 @@ rainfall–discharge relationship (log-increment, current and lagged rain,
 3-day rain, soil-moisture anomaly, discharge anomaly), with no event
 labels, places the three storm days at the 99.93rd percentile of each
 location’s record and the three non-rainfall events at ordinary levels
-(Chatara 64.9, Bahrabise 73.8, Rasuwagadhi 67.7; Table 39).</p>
+(Chatara 64.9, Bahrabise 73.8, Rasuwagadhi 67.7; Table 40).</p>
 <p>These checks have two limitations. First, a residual or an anomaly
 score flags <em>surprises</em>, not causes: it is large whenever the
 river rises more than yesterday’s state predicts, which includes
@@ -6927,12 +7081,12 @@ non-rain-driven events. Second, the three negative controls are
 <strong>absent from the modelled data</strong>, not merely missed by the
 model, which supports the conclusion that whatever caused those floods
 is not in the panel. A third detector, an LSTM autoencoder trained
-without labels on all windows (Table 40), agrees: it places the three
+without labels on all windows (Table 41), agrees: it places the three
 storm days at the 99.3rd–99.9th percentile of each location’s
 reconstruction error, and the three non-rainfall events at the 81st
 (Rasuwagadhi), 85th (Bahrabise) and 87th (Chatara) percentiles, higher
 than the isolation forest gave but below any usual alarm level.</p>
-<p><strong>Table 38. Out-of-fold standardised residuals around
+<p><strong>Table 39. Out-of-fold standardised residuals around
 documented events
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">h=1</annotation></semantics></math>,
 LOMO).</strong></p>
@@ -7068,7 +7222,7 @@ LOMO).</strong></p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 39. Isolation-forest percentile of the documented
+<p><strong>Table 40. Isolation-forest percentile of the documented
 events (maximum over ±1 day).</strong></p>
 <table>
 <colgroup>
@@ -7136,7 +7290,7 @@ events (maximum over ±1 day).</strong></p>
 model trained <em>without</em> the 2024 monsoon and perturbed its inputs
 at the origins 26 and 27 September 2024: soil-moisture anomaly ±1
 standard deviation and rainfall features scaled by 0.8 and 1.2. The
-model is almost insensitive to these changes (Table 41): the
+model is almost insensitive to these changes (Table 42): the
 soil-moisture perturbations change the predicted next-day discharge by
 exactly 0.0 % at the 27 September origin at all four locations, and the
 rainfall scalings by between −11.4 % and +4.5 %, with a non-monotone
@@ -7149,7 +7303,7 @@ extrapolate beyond the target range seen in training, and the storm
 exceeds it. <strong>The scenario analysis therefore says nothing about
 catchment sensitivity; it documents a limitation of the model class for
 extreme events.</strong></p>
-<p><strong>Table 40. LSTM-autoencoder percentile of the documented
+<p><strong>Table 41. LSTM-autoencoder percentile of the documented
 events (reconstruction error of the last three days of the 30-day
 window, maximum over ±1 day).</strong></p>
 <table>
@@ -7214,7 +7368,7 @@ window, maximum over ±1 day).</strong></p>
 </tr>
 </tbody>
 </table>
-<p><strong>Table 41. Counterfactual perturbations, boosted model trained
+<p><strong>Table 42. Counterfactual perturbations, boosted model trained
 without the 2024 monsoon (origins 26 and 27 September 2024,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">h=1</annotation></semantics></math>).</strong></p>
 <table style="width:100%;">
@@ -7630,11 +7784,11 @@ days; applying it changes the median NSE of the default boosted model by
 back-transformation.</p>
 <h3 id="what-changed-after-correcting-the-discharge">8.9 What changed
 after correcting the discharge</h3>
-<p>Table 42 compares key results on the uncorrected V2 series (the
+<p>Table 43 compares key results on the uncorrected V2 series (the
 companion document <code>PAPER_PLAN.md</code>) with those on the
 corrected series. Some conclusions are robust to the correction and some
 are not.</p>
-<p><strong>Table 42. Key results before and after correcting the
+<p><strong>Table 43. Key results before and after correcting the
 discharge cells.</strong></p>
 <table>
 <colgroup>
@@ -7804,7 +7958,7 @@ sampled, and distorted the interval calibration at high flows. A
 benchmark built on the uncorrected file would have given numbers that
 are internally consistent and scientifically misleading. The correction
 is a heuristic (Section 3.4), but it moves the panel from clearly wrong
-to plausible, and the comparison of Table 42 shows which conclusions
+to plausible, and the comparison of Table 43 shows which conclusions
 survive.</p>
 <p><strong>Why a headline percentage is hard to interpret.</strong> The
 dataset page refers to a public notebook that reported a headline
@@ -7814,7 +7968,7 @@ for “discharge above the site’s 90th percentile” can reach a high
 accuracy by predicting the previous day’s label, because high-flow days
 cluster in the monsoon, and accuracy is dominated by the majority class.
 The comparison that matters is with the persistence classifier, with
-precision–recall and event-level measures (Table 20), and under all
+precision–recall and event-level measures (Table 21), and under all
 three label definitions of Section 4.7. In our test window persistence
 already detects every event at one day (event POD 1.00) with a
 false-alarm ratio of 0.20.</p>
@@ -7853,11 +8007,14 @@ area or gauge series was available; two replacement cells (Khokana and
 Rasuwagadhi) lie at the corner of the scanned block; the “highest mean
 flow in the block” rule could in principle select a different river near
 a confluence; and weather and soil moisture are still taken at the
-original coordinate, up to about 0.11° from the discharge cell. Until
-the corrected cells are checked against DHM gauge series, we interpret
-results as properties of the corrected <em>modelled</em> data. A future
-version of the dataset should record the GloFAS cell used and its
-upstream area.</p>
+original coordinate, up to about 0.11° from the discharge cell. The only
+checks available were internal (Section 3.4: the catchment area implied
+by the mean flow, and the nesting of upstream and downstream flows),
+which support the three large-river corrections and flag Khokana and
+Rasuwagadhi as uncertain. Until the corrected cells are checked against
+DHM gauge series, we interpret results as properties of the corrected
+<em>modelled</em> data. A future version of the dataset should record
+the GloFAS cell used and its upstream area.</p>
 <p><strong>Internal validity.</strong> The principal risks are temporal
 leakage (mitigated by Algorithm 1 and three automated leakage tests, one
 of which is a negative control), selection of thresholds on test data
@@ -7910,7 +8067,7 @@ help robustly are findings of this study and are reported as such.</p>
 <h2 id="implementation-status-reproduction-and-remaining-work">10.
 Implementation Status, Reproduction and Remaining Work</h2>
 <h3 id="implementation-status">10.1 Implementation status</h3>
-<p><strong>Table 43. What was implemented and run, and what
+<p><strong>Table 44. What was implemented and run, and what
 remains.</strong></p>
 <table>
 <colgroup>
@@ -8062,7 +8219,7 @@ Devghat, Chatara and Khokana.</li>
 (<code>build_extended.py</code>, then <code>extended/run_all.sh</code>);
 about 13 more training monsoons would make leave-one-monsoon-out and the
 extreme-value analyses meaningful.</li>
-<li>Run the remaining unrun items of Table 43 (wavelet coherence and the
+<li>Run the remaining unrun items of Table 44 (wavelet coherence and the
 reference Temporal Fusion Transformer). After any re-run, execute
 <code>check_numbers.py</code>, which cross-checks about 100 of the
 numbers quoted in the text against the result files (all matched at the

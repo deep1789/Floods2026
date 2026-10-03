@@ -14,6 +14,10 @@ S = pd.read_csv('results/extended/cell_scan_summary.csv')
 S['off'] = S.best_cell; T = pd.DataFrame({'Location': S.location, 'Dataset cell mean Q': S.dataset_mean.round(1), 'Dataset cell reproduces file': S.center_cell_reproduces_dataset.map({True: 'yes', False: 'no'}), 'Best neighbouring cell offset': S.off,
     'Best-cell mean Q': S.best_mean_Q.round(1), 'Ratio best / dataset': S.ratio_best_to_center.round(1), 'Cells >10×': S.cells_with_mean_gt_10x_center, 'Replaced in corrected panel': (S.ratio_best_to_center > 10).map({True: 'yes', False: 'no'})})
 order = pd.read_csv(f'{B}/tables/sites.md', sep='|', skiprows=2, header=None).iloc[:, 1].str.strip().tolist() if False else None
+ia = pd.read_csv(f'{B}/results/implied_area.csv'); v2 = ia[ia.series == 'V2 file'].set_index('location'); co = ia[ia.series == 'corrected'].set_index('location')
+IA = pd.DataFrame({'Location': co.index, 'Annual precipitation at coordinate (mm)': co.P_mm_yr.round(0).values, 'V2 mean Q (m³/s)': v2.mean_Q.round(1).values, 'V2 implied area (km²)': v2.area_c05.round(0).values, 'Corrected mean Q (m³/s)': co.mean_Q.round(1).values,
+    'Corrected implied area (km²)': co.area_c05.round(0).values, 'Range for c = 0.7–0.3 (km²)': [f'{lo:,.0f}–{hi:,.0f}' for lo, hi in zip(co.area_lo, co.area_hi)]}).sort_values('Corrected implied area (km²)', ascending=False)
+open(f'{B}/tables2/implied_area.md', 'w').write(md(IA, '{:,.0f}'))
 open(f'{B}/tables2/cellscan.md', 'w').write(md(T.sort_values('Ratio best / dataset', ascending=False), '{:.1f}'))
 # --- carry-over sections with patches
 def patch(s, pairs):

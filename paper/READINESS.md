@@ -28,8 +28,8 @@
 
 ## Remaining blockers
 
-1. **The corrected cells are unvalidated.** No gauge data were available. Khokana's and Kusum's series still look erratic at low flow (so they may still not be on the main channel), two replacement cells sit at the corner of the scanned block, and the weather is taken at the original coordinate (up to ~12 km from the discharge cell).
-   *Fix:* validate against DHM gauge discharge (or published long-term means) at least at Chisapani, Devghat, Chatara and Khokana; widen the scan around Khokana, Kusum and Rasuwagadhi.
+1. **The corrected cells are not validated against gauges.** No gauge data were available (and none can be supplied). They passed an internal plausibility check (catchment area implied by mean flow and local precipitation: the three large rivers go from 31-107 km2 in the V2 file to 48,000-74,000 km2 corrected; nesting of upstream and downstream flows is consistent), which supports the large-river corrections but flags Khokana and Rasuwagadhi as uncertain. Khokana's and Kusum's series still look erratic at low flow (so they may still not be on the main channel), two replacement cells sit at the corner of the scanned block, and the weather is taken at the original coordinate (up to ~12 km from the discharge cell).
+   *Fix (if data ever become available):* validate against DHM gauge discharge at least at Chisapani, Devghat, Chatara and Khokana; widen the scan around Khokana, Kusum and Rasuwagadhi. Without gauge data the realistic framing is a data-correction and benchmark paper that states this limit openly.
 2. **The record is ~4.7 monsoons.** Extending it needs `archive-api.open-meteo.com` quota (the daily limit was exhausted for this environment's shared IP; the discharge API works).
    *Fix:* run `python build_extended.py` once the quota resets, then `bash extended/run_all.sh`. Both are written and **untested end to end**.
 

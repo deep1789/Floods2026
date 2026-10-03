@@ -36,4 +36,7 @@ for loc, lo, hi in (('Bhada Bridge', .13, 1.10), ('Belsot', .10, 1.03), ('Khokan
 chk('P intervals excluding zero', int((~pp.contains_zero).sum()), 4, 0, '{:.0f}')
 ae = pd.read_csv(B + 'autoencoder.csv').set_index('Location'); chk('AE Kusum pct', ae.loc['Kusum', 'percentile'], 99.7, .06, '{:.1f}'); chk('AE Devghat pct', ae.loc['Devghat', 'percentile'], 99.9, .06, '{:.1f}'); chk('AE Chatara pct', ae.loc['Chatara', 'percentile'], 87.3, .06, '{:.1f}'); chk('AE Bahrabise pct', ae.loc['Bahrabise', 'percentile'], 85.5, .06, '{:.1f}'); chk('AE Rasuwagadhi pct', ae.loc['Rasuwagadhi', 'percentile'], 80.8, .06, '{:.1f}')
 cu = pd.read_csv(B + 'cusum.csv'); chk('cusum precip bonf sig', int((cu[cu.variable == 'precipitation'].p_bonf < .05).sum()), 0, 0, '{:.0f}')
+ia = pd.read_csv(B + 'implied_area.csv'); v2 = ia[ia.series == 'V2 file'].set_index('location'); co = ia[ia.series == 'corrected'].set_index('location')
+for loc, q in (('Chisapani', 31), ('Chatara', 59), ('Devghat', 107)): chk(f'V2 implied area {loc}', v2.loc[loc, 'area_c05'], q, 0.6, '{:.0f}')
+for loc, q in (('Chisapani', 48000), ('Chatara', 73000), ('Devghat', 74000), ('Rasuwagadhi', 5500), ('Khokana', 1250)): chk(f'corrected implied area {loc}', co.loc[loc, 'area_c05'], q, 0.012 * q, '{:.0f}')
 print(f'{n} checks, {len(fails)} mismatches'); [print(' -', f) for f in fails]
