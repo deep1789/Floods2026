@@ -39,7 +39,8 @@
 | Lag weights, soil-moisture mixed model, ablation, POT/GPD, joint extremes, upstream–downstream, recession | done | `analyses.py`, `ablation.py` |
 | Grouped permutation importance, scenario analysis, isolation forest, smearing check | done | `run_extras2.py` |
 | Pettitt change-point test on weather series | done; uninterpretable p-values (autocorrelation), but break dates cluster across locations | Section 3.6, `breaks.py` |
-| TreeSHAP, LSTM autoencoder, wavelet coherence, profile-likelihood GPD intervals, CUSUM test | **not run** | — |
+| TreeSHAP (on a LightGBM model), LSTM autoencoder, profile-likelihood GPD intervals, CUSUM test | done | `run_remaining.py` |
+| Wavelet coherence; reference Temporal Fusion Transformer | **not run** | — |
 | Validation of the corrected cells against DHM gauges; catchment attributes | **not done**: no gauge data available | Section 7.11 |
 | Record extension (2010–2022) with corrected discharge | **scripts written, not run**: the weather API's daily quota was exhausted; the discharge API works | `build_extended.py`, `extended/run_all.sh` |
 
@@ -54,6 +55,7 @@ python build_corrected.py              # builds corrected/panel_corrected_2023_2
 bash corrected/run_all.sh              # leakage tests, benchmark, tuning, LSTM, extra arms, analyses, evaluation (about 1 hour)
 cd corrected && FLOOD_CSV=$PWD/panel_corrected_2023_2026.csv python ../prelim.py && python ../make_tables.py
 cd corrected && FLOOD_CSV=$PWD/panel_corrected_2023_2026.csv python ../breaks.py   # Pettitt tests (Section 3.6)
+FLOOD_CSV=$PWD/panel_corrected_2023_2026.csv python ../run_remaining.py   # CUSUM, profile-likelihood GPD, TreeSHAP, LSTM autoencoder
 cd .. && python build_paper.py         # assembles corrected/PAPER.md
 python check_numbers.py                # cross-checks 100+ numbers quoted in the text against the result files
 ```
@@ -64,7 +66,7 @@ Run the heavy scripts one at a time; they use all CPU cores and slow each other 
 
 1. Validate or correct the replacement cells against DHM gauge discharge (or published long-term means), at least at Chisapani, Devghat, Chatara and Khokana.
 2. Extend the record when the weather API quota allows (`build_extended.py`, then `extended/run_all.sh`); about 13 more training monsoons would make leave-one-monsoon-out and the extreme-value analyses meaningful.
-3. Run the unrun items of Table 131. After any re-run, execute `check_numbers.py`, which cross-checks about 100 of the numbers quoted in the text against the result files (all matched at the time of writing); numbers not covered by it were checked by hand.
+3. Run the remaining unrun items of Table 131 (wavelet coherence and the reference Temporal Fusion Transformer). After any re-run, execute `check_numbers.py`, which cross-checks about 100 of the numbers quoted in the text against the result files (all matched at the time of writing); numbers not covered by it were checked by hand.
 4. Verify the references, and reformat for the target venue (a dataset-and-benchmark track is the natural fit).
 
 ### 10.3 Suggested venues

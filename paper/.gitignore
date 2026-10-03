@@ -10,3 +10,4 @@ results/extended/*.log
 **/results/progress.log
 corrected/run_all.out
 extended/panel_*.csv
+paper/corrected/PAPER.html

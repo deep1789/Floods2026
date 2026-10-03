@@ -29,4 +29,11 @@ lg = pd.read_csv(B + 'lag_weights.csv').set_index('Location'); chk('Khokana cent
 pt = pd.read_csv('corrected/results/pettitt.csv') if False else pd.read_csv(B + 'pettitt.csv'); n += 1
 if int((pt.p_bonf < .05).sum()) != 46: fails.append(f'pettitt bonf count {(pt.p_bonf<.05).sum()} vs 46')
 for s in ('0.984, 0.949 and 0.893', '8,649 m³/s', '38-fold', '0.52 at lag 0 for Rasuwagadhi', '46 of the 60 tests'): inpaper(s, 'string')
+sh = pd.read_csv(B + 'shap_groups.csv'); g = lambda grp, h: sh[(sh.Group == grp) & (sh.h == h)].share_pct.iloc[0]
+chk('shap flow lags h1', g('flow lags', 1), 42, .6, '{:.1f}'); chk('shap flow lags h3', g('flow lags', 3), 38, .6, '{:.1f}'); chk('shap flow lags h7', g('flow lags', 7), 42, .6, '{:.1f}'); chk('shap current rain h1', g('current rain', 1), 26, .6, '{:.1f}'); chk('shap season h7', g('season', 7), 24, .6, '{:.1f}'); chk('shap soil h1', g('soil moisture', 1), 3.3, .06, '{:.1f}'); chk('shap soil h3', g('soil moisture', 3), 3.6, .06, '{:.1f}')
+gp_ = pd.read_csv(B + 'gpd_profile.csv'); pp = gp_[(gp_.Variable == 'P')].set_index('Location')
+for loc, lo, hi in (('Bhada Bridge', .13, 1.10), ('Belsot', .10, 1.03), ('Khokana', .01, 1.09), ('Chisapani', .06, .71)): chk(f'profile lo {loc}', pp.loc[loc, 'profile_lo'], lo, .006, '{:.2f}'); chk(f'profile hi {loc}', pp.loc[loc, 'profile_hi'], hi, .006, '{:.2f}')
+chk('P intervals excluding zero', int((~pp.contains_zero).sum()), 4, 0, '{:.0f}')
+ae = pd.read_csv(B + 'autoencoder.csv').set_index('Location'); chk('AE Kusum pct', ae.loc['Kusum', 'percentile'], 99.7, .06, '{:.1f}'); chk('AE Devghat pct', ae.loc['Devghat', 'percentile'], 99.9, .06, '{:.1f}'); chk('AE Chatara pct', ae.loc['Chatara', 'percentile'], 87.3, .06, '{:.1f}'); chk('AE Bahrabise pct', ae.loc['Bahrabise', 'percentile'], 85.5, .06, '{:.1f}'); chk('AE Rasuwagadhi pct', ae.loc['Rasuwagadhi', 'percentile'], 80.8, .06, '{:.1f}')
+cu = pd.read_csv(B + 'cusum.csv'); chk('cusum precip bonf sig', int((cu[cu.variable == 'precipitation'].p_bonf < .05).sum()), 0, 0, '{:.0f}')
 print(f'{n} checks, {len(fails)} mismatches'); [print(' -', f) for f in fails]
